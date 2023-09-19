@@ -36,34 +36,45 @@ public class RandomHistory {
         }
     }
 
-    private List<Message> getAllMessages(TextChannel channel,Integer totalMessages) {
-
+    private List<Message> getAllMessages(TextChannel channel, Integer totalMessages) {
         List<Message> histlist = new ArrayList<>();
+
         while (totalMessages > 0) {
-            if (totalMessages == 149000) {
-                histlist = channel.getHistory().retrievePast(100).complete();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                logger.warn("Thread interrupted while sleeping", e);
+                Thread.currentThread().interrupt(); // Restore the interrupted status
+            }
+
+            if (histlist.isEmpty()) {
+                // Fetch the initial batch of messages
+                histlist.addAll(channel.getHistory().retrievePast(100).complete());
                 totalMessages -= 100;
-                //logger.info("histlist size: {}",histlist.size());
             } else {
                 String lastMessageId = histlist.get(histlist.size() - 1).getId();
-                logger.info("messageID: {}",lastMessageId);
+                logger.info("messageID: {}", lastMessageId);
                 MessageHistory messageHistory = channel.getHistoryAfter(lastMessageId, 100).complete();
-                histlist.addAll(messageHistory.retrievePast(100).complete());
-                logger.info("histlist size: {}",histlist.size());
-                totalMessages -= 100;
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    logger.warn("Thread interrupted while sleeping", e);
-                    Thread.currentThread().interrupt(); // Restore the interrupted status
+                List<Message> batch = messageHistory.retrievePast(100).complete();
+
+                if (batch.isEmpty()) {
+                    // No more messages to retrieve
+                    break;
                 }
+
+                histlist.addAll(batch);
+                totalMessages -= 100;
             }
-            if (totalMessages == 0 || totalMessages < 0){
-                logger.info("total messages complete.");
+
+            if (totalMessages <= 0) {
+                logger.info("Total messages complete.");
+                break;
             }
         }
-        return  histlist;
+
+        return histlist;
     }
+
 
     private String quoteRandomMessage(List<Message> historicMessages) {
         Random random = new Random();
