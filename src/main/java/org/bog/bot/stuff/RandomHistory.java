@@ -6,11 +6,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.time.OffsetDateTime;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Data
 public class RandomHistory {
@@ -18,7 +19,7 @@ public class RandomHistory {
     private static final Logger logger = LoggerFactory.getLogger(RandomHistory.class);
     private final Map<Long, List<Message>> channelMessageHistories = new HashMap<>();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
-    private final int MAX_MESSAGES = 160000;        //current likely max of our group chat in the near future.
+    private final int MAX_MESSAGES = 1000;        //current likely max of our group chat in the near future.
     private int totalMessages;
     private List<Message> messageList;
 
@@ -33,24 +34,41 @@ public class RandomHistory {
     public void populateMessages(TextChannel channel){
 
         if(!channelMessageHistories.containsKey(channel.getIdLong())) {
-            setMessageList(getAllMessages(channel));
+            setMessageList(retrieveAllMessages(channel));
             channelMessageHistories.put(channel.getIdLong(), messageList);
         }
     }
 
-    private List<Message> getAllMessages(TextChannel channel) {
+    private List<Message> retrieveAllMessages(TextChannel channel) {
         List<Message> histlist = new ArrayList<>();
-        logger.info("beginning message retrieval in channel: {}", channel.getIdLong());
+        logger.info("Beginning message retrieval in channel: {}", channel.getIdLong());
+        logger.info("This may take some time if the channel has a large number of messages.");
 
         channel.getIterableHistory()
-                .takeAsync(MAX_MESSAGES)
-                .thenApply(list -> list.stream().collect(Collectors.toList()))
-                .thenAccept(messages -> histlist.addAll(messages))
-                .join();
+                .forEachAsync(message ->{
+                    logger.info("histlistsizeinsideforeach: {}",histlist.size());
+                    return histlist.add(message);
+                }).join();
 
-        setTotalMessages(histlist.size());      //setting this for bot response
+        setTotalMessages(histlist.size()); // Setting this for bot response
         logger.info("histlist final size: {}", histlist.size());
+
+        // Now, write histlist contents to a file
+        writeHistListToFile(histlist);
+
         return histlist;
+    }
+
+    private void writeHistListToFile(List<Message> histlist) {
+        try (PrintWriter writer = new PrintWriter("histlist.txt")) {
+            for (Message message : histlist) {
+                writer.println(message.getIdLong());
+            }
+            logger.info("histlist contents written to histlist.txt");
+        } catch (FileNotFoundException e) {
+            logger.error("Error writing histlist contents to file", e);
+            throw new RuntimeException(e);
+        }
     }
 
 
