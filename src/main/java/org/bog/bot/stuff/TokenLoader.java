@@ -9,11 +9,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
-public class ConfigLoader {
+public class TokenLoader {
     public static String loadToken() throws IOException {
-        // Load the config.yaml file
-        Path configPath = Paths.get("src/main/resources/config.yaml");
-        try (InputStream inputStream = Files.newInputStream(configPath)) {
+        // Load the token.yaml file
+        Path tokenPath = Paths.get("src/main/resources/token.yaml");
+        try (InputStream inputStream = Files.newInputStream(tokenPath)) {
             // Parse the YAML content
             Yaml yaml = new Yaml();
             Map<String, String> yamlData = yaml.load(inputStream);

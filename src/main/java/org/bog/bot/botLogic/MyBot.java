@@ -3,15 +3,15 @@ package org.bog.bot.botLogic;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.bog.bot.Listeners.MyEventListener;
-import org.bog.bot.stuff.ConfigLoader;
+import org.bog.bot.stuff.TokenLoader;
 
 import java.io.IOException;
 
 public class MyBot {
     public static void main(String[] args) {
         try {
-            // Load the token using ConfigLoader
-            String token = ConfigLoader.loadToken();
+            // Load the token using TokenLoader
+            String token = TokenLoader.loadToken();
 
             // Check if the token is not null or empty
             if (token != null && !token.isEmpty()) {
@@ -21,7 +21,7 @@ public class MyBot {
                         .addEventListeners(new MyEventListener()) // Create an event listener class
                         .build();
             } else {
-                System.out.println("Token is missing or empty in config.yaml");
+                System.out.println("Token is missing or empty in token.yaml");
             }
         } catch (IOException e) {
             e.printStackTrace();
