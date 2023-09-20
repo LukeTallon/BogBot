@@ -17,9 +17,10 @@ public class RandomHistory {
 
     private static final Logger logger = LoggerFactory.getLogger(RandomHistory.class);
     private final Map<Long, List<Message>> channelMessageHistories = new HashMap<>();
-    private List<Message> messageList;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
+    private final int MAX_MESSAGES = 160000;        //current likely max of our group chat in the near future.
     private int totalMessages;
+    private List<Message> messageList;
 
     public String getRandomQuote(TextChannel channel) {
 
@@ -42,12 +43,12 @@ public class RandomHistory {
         logger.info("beginning message retrieval in channel: {}", channel.getIdLong());
 
         channel.getIterableHistory()
-                .takeAsync(160000)
+                .takeAsync(MAX_MESSAGES)
                 .thenApply(list -> list.stream().collect(Collectors.toList()))
                 .thenAccept(messages -> histlist.addAll(messages))
                 .join();
 
-        setTotalMessages(histlist.size());
+        setTotalMessages(histlist.size());      //setting this for bot response
         logger.info("histlist final size: {}", histlist.size());
         return histlist;
     }
