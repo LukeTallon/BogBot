@@ -23,21 +23,11 @@ public class MyEventListener extends ListenerAdapter {
                     String guildId = event.getGuild().getId();
 
                     if (guildId.equals("431710770737184771")) {
-                        if (message.equalsIgnoreCase("!randy")) {
-                            TextChannel textChannel = event.getChannel().asTextChannel();
-                            event.getChannel().sendMessage(randomHistory.getRandomQuote(textChannel)).queue();
-                        }
+                        resolveRandomQuote(event, message);
                     }
+
                     if (guildId.equals("690915467778326549")) {
-                        if (message.equalsIgnoreCase("!randy")) {
-                            TextChannel textChannel = event.getChannel().asTextChannel();
-                            event.getChannel().sendMessage(randomHistory.getRandomQuote(textChannel)).queue();
-                        }
-                        if (message.equalsIgnoreCase("!loadMessages")) {
-                            TextChannel textChannel = event.getChannel().asTextChannel();
-                            randomHistory.populateMessages(textChannel, 149000);
-                            event.getChannel().sendMessage("149,000 messages loaded").queue();
-                        }
+                        resolveRandomQuote(event, message);
                     }
                 } else {
                     if (message.equalsIgnoreCase("!hello")) {
@@ -47,7 +37,21 @@ public class MyEventListener extends ListenerAdapter {
             }
         } catch (Exception e) {
             logger.error("An error occurred while processing a message:", e);
-            event.getChannel().sendMessage("An error occurred while processing your request. Please try again later.").queue();
+        }
+    }
+
+    private void resolveRandomQuote(MessageReceivedEvent event, String message) {
+        if (message.equalsIgnoreCase("!randy")) {
+            TextChannel textChannel = event.getChannel().asTextChannel();
+            event.getChannel().sendMessage(randomHistory.getRandomQuote(textChannel)).queue();
+        }
+        if (message.equalsIgnoreCase("!loadMessages")) {
+            TextChannel textChannel = event.getChannel().asTextChannel();
+            randomHistory.populateMessages(textChannel);
+            if (randomHistory.getTotalMessages() != 0){
+                event.getChannel().sendMessage(randomHistory.getTotalMessages()+" messages retrieved.").queue();
+            }
+
         }
     }
 }

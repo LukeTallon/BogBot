@@ -2,7 +2,6 @@ package org.bog.bot.stuff;
 
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +10,7 @@ import java.time.OffsetDateTime;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 public class RandomHistory {
@@ -19,59 +19,36 @@ public class RandomHistory {
     private final Map<Long, List<Message>> channelMessageHistories = new HashMap<>();
     private List<Message> messageList;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
+    private int totalMessages;
 
     public String getRandomQuote(TextChannel channel) {
 
         if (channelMessageHistories.get(channel.getIdLong()) != null) {
             return quoteRandomMessage(channelMessageHistories.get(channel.getIdLong()));
         }else {
-            return "No messages in memory";
+            return "No messages in memory, please use '!loadMessages' to populate BogBot's sack";
         }
     }
-    public void populateMessages(TextChannel channel,Integer totalMessages){
+    public void populateMessages(TextChannel channel){
 
         if(!channelMessageHistories.containsKey(channel.getIdLong())) {
-            setMessageList(getAllMessages(channel, totalMessages));
+            setMessageList(getAllMessages(channel));
             channelMessageHistories.put(channel.getIdLong(), messageList);
         }
     }
 
-    private List<Message> getAllMessages(TextChannel channel, Integer totalMessages) {
+    private List<Message> getAllMessages(TextChannel channel) {
         List<Message> histlist = new ArrayList<>();
+        logger.info("beginning message retrieval in channel: {}", channel.getIdLong());
 
-        while (totalMessages > 0) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.warn("Thread interrupted while sleeping", e);
-                Thread.currentThread().interrupt(); // Restore the interrupted status
-            }
+        channel.getIterableHistory()
+                .takeAsync(160000)
+                .thenApply(list -> list.stream().collect(Collectors.toList()))
+                .thenAccept(messages -> histlist.addAll(messages))
+                .join();
 
-            if (histlist.isEmpty()) {
-                // Fetch the initial batch of messages
-                histlist.addAll(channel.getHistory().retrievePast(100).complete());
-                totalMessages -= 100;
-            } else {
-                String lastMessageId = histlist.get(histlist.size() - 1).getId();
-                logger.info("messageID: {}", lastMessageId);
-                MessageHistory messageHistory = channel.getHistoryAfter(lastMessageId, 100).complete();
-                List<Message> batch = messageHistory.retrievePast(100).complete();
-
-                if (batch.isEmpty()) {
-                    // No more messages to retrieve
-                    break;
-                }
-
-                histlist.addAll(batch);
-                totalMessages -= 100;
-            }
-
-            if (totalMessages <= 0) {
-                logger.info("Total messages complete.");
-                break;
-            }
-        }
-
+        setTotalMessages(histlist.size());
+        logger.info("histlist final size: {}", histlist.size());
         return histlist;
     }
 
@@ -81,53 +58,36 @@ public class RandomHistory {
         int randomIndex = random.nextInt(historicMessages.size());
         Message randomMessage = historicMessages.get(randomIndex);
 
-        String quotedMessageContent = randomMessage.getContentRaw();
-        String quotedMessageAuthor = randomMessage.getAuthor().getEffectiveName();
-        OffsetDateTime quotedMessageDate = randomMessage.getTimeCreated();
-        String messageLink = randomMessage.getJumpUrl();
+        StringBuilder quotedMessage = new StringBuilder();
 
+        // Quote message content
+        quotedMessage.append("> ").append(boldenText(randomMessage.getContentRaw())).append("\n");
 
-        StringBuilder quotedMessage = new StringBuilder("> " + quotedMessageContent + "\n"
-                + "- Posted by: " + quotedMessageAuthor + "\n"
-                + "- Date: " + nicelyFormattedDateTime(quotedMessageDate) + "\n"
-                + "Link: " + messageLink);
+        // Quote author
+        quotedMessage.append("- Posted by: ").append(randomMessage.getAuthor().getEffectiveName()).append("\n");
 
+        // Quote date
+        quotedMessage.append("- Date: ").append(nicelyFormattedDateTime(randomMessage.getTimeCreated())).append("\n");
 
+        // Check and quote attachments
         for (Message.Attachment attachment : randomMessage.getAttachments()) {
-            // Check if the attachment is an image
             if (attachment.isImage()) {
-                // Add the image URL to the quoted message
-                quotedMessage.append("\n").append(attachment.getUrl());
+                quotedMessage.append(attachment.getUrl()).append("\n");
             }
         }
+
+        // Quote message link
+        quotedMessage.append("Link: ").append(randomMessage.getJumpUrl()).append("\n");
 
         return quotedMessage.toString();
     }
 
-    private String nicelyFormattedDateTime(OffsetDateTime originalDateTime){
+    private String nicelyFormattedDateTime(OffsetDateTime originalDateTime) {
+        return originalDateTime.format(formatter);
+    }
 
-        String formattedDateTime = originalDateTime.format(formatter);
-        return formattedDateTime;
+    private String boldenText(String text) {
+        return "**" + text + "**";
     }
 
 }
-
-
-//    List<Message> iterableMessages = new ArrayList<>();
-//
-////        try {
-////                iterableMessages = channel.getIterableHistory()
-////                .takeAsync(150000)
-////                .thenApply(list -> list.stream()
-////                .collect(Collectors.toList()))
-////                .get();
-////                } catch (InterruptedException e) {
-////                logger.info("InterruptedException: {},", e);
-////                e.printStackTrace();
-////                } catch (ExecutionException e) {
-////                logger.info("ExecutionException: {},", e);
-////                e.printStackTrace();
-////                }
-////                //iterableMessages.forEach(message -> logger.info(String.valueOf(message)));
-////                logger.info("all messages: {}", iterableMessages.size());
-////                return iterableMessages;
