@@ -12,6 +12,8 @@ import java.time.OffsetDateTime;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Data
 public class RandomHistory {
@@ -19,7 +21,7 @@ public class RandomHistory {
     private static final Logger logger = LoggerFactory.getLogger(RandomHistory.class);
     private final Map<Long, List<Message>> channelMessageHistories = new HashMap<>();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
-    private final int MAX_MESSAGES = 1000;        //current likely max of our group chat in the near future.
+    private final int MAX_MESSAGES = 110000;        //current likely max of our group chat in the near future.
     private int totalMessages;
     private List<Message> messageList;
 
@@ -34,30 +36,30 @@ public class RandomHistory {
     public void populateMessages(TextChannel channel){
 
         if(!channelMessageHistories.containsKey(channel.getIdLong())) {
-            setMessageList(retrieveAllMessages(channel));
-            channelMessageHistories.put(channel.getIdLong(), messageList);
+            CompletableFuture<List<Message>> allMessages = retrieveAllMessages(channel);
+            logger.info("interesting: {}",allMessages);
+            allMessages.thenApply(list -> list.stream().collect(Collectors.toList()))
+                    .thenAccept(messages -> channelMessageHistories.put(channel.getIdLong(), messages));
+            setTotalMessages(channelMessageHistories.get(channel.getIdLong()).size());
+            logger.info("finale final size: {}", totalMessages);
+            writeHistListToFile(channelMessageHistories.get(channel.getIdLong()));
         }
     }
 
-    private List<Message> retrieveAllMessages(TextChannel channel) {
-        List<Message> histlist = new ArrayList<>();
-        logger.info("Beginning message retrieval in channel: {}", channel.getIdLong());
-        logger.info("This may take some time if the channel has a large number of messages.");
+    private CompletableFuture<List<Message>> retrieveAllMessages(TextChannel channel) {
+        try {
+            logger.info("Beginning message retrieval in channel: {}", channel.getIdLong());
+            logger.info("This may take some time if the channel has a large number of messages.");
 
-        channel.getIterableHistory()
-                .forEachAsync(message ->{
-                    logger.info("histlistsizeinsideforeach: {}",histlist.size());
-                    return histlist.add(message);
-                }).join();
-
-        setTotalMessages(histlist.size()); // Setting this for bot response
-        logger.info("histlist final size: {}", histlist.size());
-
-        // Now, write histlist contents to a file
-        writeHistListToFile(histlist);
-
-        return histlist;
+            return channel.getIterableHistory()
+                    .takeAsync(MAX_MESSAGES);
+        } catch (Exception e) {
+            logger.error("Error retrieving messages:", e);
+            return CompletableFuture.completedFuture(Collections.emptyList()); // Return an empty list in case of error
+        }
     }
+
+
 
     private void writeHistListToFile(List<Message> histlist) {
         try (PrintWriter writer = new PrintWriter("histlist.txt")) {
