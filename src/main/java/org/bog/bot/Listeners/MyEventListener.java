@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 public class MyEventListener extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(MyEventListener.class);
-    private RandomHistory randomHistory = new RandomHistory();
+    private final RandomHistory randomHistory = new RandomHistory();
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -45,13 +45,9 @@ public class MyEventListener extends ListenerAdapter {
             TextChannel textChannel = event.getChannel().asTextChannel();
             event.getChannel().sendMessage(randomHistory.getRandomQuote(textChannel)).queue();
         }
-        if (message.equalsIgnoreCase("!loadMessages")) {
+        if (message.equalsIgnoreCase("!load")) {
             TextChannel textChannel = event.getChannel().asTextChannel();
             randomHistory.populateMessages(textChannel);
-            if (randomHistory.getTotalMessages() != 0){
-                event.getChannel().sendMessage(randomHistory.getTotalMessages()+" messages retrieved.").queue();
-            }
-
         }
     }
 }
