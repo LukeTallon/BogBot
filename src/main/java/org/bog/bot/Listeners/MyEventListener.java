@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 public class MyEventListener extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(MyEventListener.class);
+    public final String PERSONAL_DISCORD = "431710770737184771";
+    public final String KACHIGGLES = "690915467778326549";
     private final RandomHistory randomHistory = new RandomHistory();
 
     @Override
@@ -22,11 +24,11 @@ public class MyEventListener extends ListenerAdapter {
                 if (event.isFromGuild()) {
                     String guildId = event.getGuild().getId();
 
-                    if (guildId.equals("431710770737184771")) {
+                    if (isPersonalDiscordChannel(guildId)) {
                         resolveRandomQuote(event, message);
                     }
 
-                    if (guildId.equals("690915467778326549")) {
+                    if (isKachigglesDiscordChannel(guildId)) {
                         resolveRandomQuote(event, message);
                     }
                 } else {
@@ -38,6 +40,14 @@ public class MyEventListener extends ListenerAdapter {
         } catch (Exception e) {
             logger.error("An error occurred while processing a message:", e);
         }
+    }
+
+    private boolean isKachigglesDiscordChannel(String guildId) {
+        return guildId.equals(KACHIGGLES);
+    }
+
+    private boolean isPersonalDiscordChannel(String guildId) {
+        return guildId.equals(PERSONAL_DISCORD);
     }
 
     private void resolveRandomQuote(MessageReceivedEvent event, String message) {
