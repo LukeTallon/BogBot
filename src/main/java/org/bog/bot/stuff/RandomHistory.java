@@ -4,12 +4,10 @@ import lombok.Data;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.time.OffsetDateTime;
-
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,18 +21,23 @@ import java.util.function.Consumer;
 @Data
 public class RandomHistory {
 
-    private static final Logger logger = LoggerFactory.getLogger(RandomHistory.class);
-    private final CharSequence LOADING_MESSAGE = "Loading messages, please wait...";
-    private final String MessageFile = "AllMessageIds.txt";
+    private final Logger logger;
     private final Map<Long, List<Message>> channelMessageHistories = new ConcurrentHashMap<>();
+
+    private final CharSequence LOADING_MESSAGE = "Loading messages, please wait...";
+    private final String messageFile = "AllMessageIds.txt";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
+
+    public RandomHistory(Logger logger) {
+        this.logger = logger;
+    }
 
     public String getRandomQuote(TextChannel channel) {
 
         if (channelMessageHistories.get(channel.getIdLong()) != null) {
             return quoteRandomMessage(channelMessageHistories.get(channel.getIdLong()));
         } else {
-            return "No messages in memory, please use '!loadMessages' to populate BogBot's sack";
+            return "No messages in memory, please use '!load' to populate BogBot's sack";
         }
     }
 
@@ -68,7 +71,7 @@ public class RandomHistory {
             // Retrieve and process messages from MessageHistory
             for (Message message : channel.getIterableHistory()) {
                 messageList.add(message);
-                if(messageList.size() % 100 == 0) {
+                if(messageList.size() % 1000 == 0) {
                     logger.info("Messages size: {}", messageList.size());
                 }
             }
@@ -83,17 +86,16 @@ public class RandomHistory {
 
     private void writeAllMessageIdsToFile(List<Message> AllMessageIds) {
 
-        try (PrintWriter writer = new PrintWriter(MessageFile)) {
+        try (PrintWriter writer = new PrintWriter(messageFile)) {
             for (Message message : AllMessageIds) {
                 writer.println(message.getIdLong());
             }
-            logger.info("All Message Ids written to" + MessageFile);
+            logger.info("All Message Ids written to" + messageFile);
         } catch (FileNotFoundException e) {
             logger.error("Error writing All Message Ids contents to file", e);
             throw new RuntimeException(e);
         }
     }
-
 
     private String quoteRandomMessage(List<Message> historicMessages) {
         Random random = new Random();

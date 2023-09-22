@@ -12,7 +12,7 @@ public class MyEventListener extends ListenerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(MyEventListener.class);
     public final String PERSONAL_DISCORD = "431710770737184771";
     public final String KACHIGGLES = "690915467778326549";
-    private final RandomHistory randomHistory = new RandomHistory();
+    private final RandomHistory randomHistory = new RandomHistory(logger);
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
