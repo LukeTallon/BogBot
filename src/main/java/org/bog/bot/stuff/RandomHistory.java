@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 @Data
 public class RandomHistory {
@@ -40,33 +40,45 @@ public class RandomHistory {
 
     public void populateMessages(TextChannel channel) {
         if (!channelMessageHistories.containsKey(channel.getIdLong())) {
+            Message botLoadingResponse = channel.sendMessage(LOADING_MESSAGE).complete();
             CompletableFuture<List<Message>> allMessages = retrieveAllMessages(channel);
-
-            channel.sendMessage(LOADING_MESSAGE).queue(loadingMessage -> allMessages.thenAccept(messages -> {
-                channelMessageHistories.put(channel.getIdLong(), messages);
+            acceptCompletableFuture(allMessages, messages -> {
+                channelMessageHistories.put(channel.getIdLong(), new ArrayList<>(messages));
                 logger.info("finale final size: {}", totalMessageCount(channel));
-                writeAllMessageIdsToFile(messages);
-                loadingMessage.editMessage("Loading finished... " + totalMessageCount(channel) + " messages retrieved.").queue();
-            }));
+                botLoadingResponse.editMessage("Loading finished... " + totalMessageCount(channel) + " messages retrieved.").queue();
+                writeAllMessageIdsToFile(channelMessageHistories.get(channel.getIdLong()));
+            });
         }
+    }
+
+    private void acceptCompletableFuture(
+            CompletableFuture<List<Message>> completableFuture,
+            Consumer<List<Message>> callback) {
+
+        completableFuture.thenAcceptAsync(callback);
     }
 
     private CompletableFuture<List<Message>> retrieveAllMessages(TextChannel channel) {
         logger.info("Beginning message retrieval in channel: {}", channel.getIdLong());
         logger.info("This may take some time if the channel has a large number of messages.");
-        AtomicInteger count = new AtomicInteger();
-        List<Message> messages = new ArrayList<>();
 
-        return channel.getIterableHistory()
-                .forEachAsync(message -> {
-                    aSyncMessagePopulate(message, messages, count);
-                    return true; // Continue iteration for all messages
-                })
-                .thenApply(result -> messages)
-                .exceptionally(e -> {
-                    logger.error("Error retrieving messages:", e);
-                    return Collections.emptyList();
-                });
+        return CompletableFuture.supplyAsync(() -> {
+            List<Message> messageList = new ArrayList<>();
+
+            // Retrieve and process messages from MessageHistory
+            for (Message message : channel.getIterableHistory()) {
+                messageList.add(message);
+                if(messageList.size() % 100 == 0) {
+                    logger.info("Messages size: {}", messageList.size());
+                }
+            }
+
+            logger.info("Messages size: {}", messageList.size());
+            return messageList;
+        }).exceptionally(e -> {
+            logger.error("Error retrieving messages:", e);
+            return Collections.emptyList();
+        });
     }
 
     private void writeAllMessageIdsToFile(List<Message> AllMessageIds) {
@@ -104,14 +116,6 @@ public class RandomHistory {
         quotedMessage.append("Link: ").append(randomMessage.getJumpUrl()).append("\n");
 
         return quotedMessage.toString();
-    }
-
-    private void aSyncMessagePopulate(Message message, List<Message> messages, AtomicInteger count) {
-        messages.add(message);
-        count.getAndIncrement();
-        if (count.get() % 100 == 0) {
-            logger.info("Messages size: {}", messages.size());
-        }
     }
 
     private int totalMessageCount(TextChannel channel) {
