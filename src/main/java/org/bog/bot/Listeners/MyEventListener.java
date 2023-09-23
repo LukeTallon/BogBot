@@ -19,6 +19,7 @@ public class MyEventListener extends ListenerAdapter {
     private static Logger logger;
     public final String PERSONAL_DISCORD = "431710770737184771";
     public final String KACHIGGLES = "690915467778326549";
+    private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
     private RandomHistory randomHistory;
 
     private final JDA jda;
@@ -129,7 +130,11 @@ public class MyEventListener extends ListenerAdapter {
     private void resolveRandomQuote(MessageReceivedEvent event, String message) {
         if (message.equalsIgnoreCase("!randy")) {
             TextChannel textChannel = event.getChannel().asTextChannel();
-            event.getChannel().sendMessage(randomHistory.getRandomQuote(textChannel)).queue();
+
+            String retrievedMessage = randomHistory.getRandomQuote(textChannel);
+            String outGoingMessage = retrievedMessage.length() < 2000 ? retrievedMessage : MESSAGE_TOO_LONG;
+
+            event.getChannel().sendMessage(outGoingMessage).queue();
         }
         if (message.equalsIgnoreCase("!load")) {
             TextChannel textChannel = event.getChannel().asTextChannel();
