@@ -19,7 +19,7 @@ public class RandomMessageTask extends TimerTask {
 
     private Guild guild;
     private TextChannel outputChannel;
-    List<TextChannel> booneChannels = guild.getTextChannels();
+    List<TextChannel> booneChannels;
     RandomHistory randomHistory = new RandomHistory(logger);
 
 
@@ -27,6 +27,7 @@ public class RandomMessageTask extends TimerTask {
     public RandomMessageTask(Guild guild, TextChannel outputChannel) {
         this.guild = guild;
         this.outputChannel = outputChannel;
+        booneChannels = guild.getTextChannels();
     }
     private int sizeRandomChannelSelector(List<TextChannel> filteredChannels){
         int size = filteredChannels.size();
