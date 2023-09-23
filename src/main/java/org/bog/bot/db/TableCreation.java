@@ -1,17 +1,28 @@
 package org.bog.bot.db;
 
+import lombok.Data;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@Data
 public class TableCreation {
 
-    String jdbcUrl = "jdbc:postgresql://localhost:5432/bogbotdb";
-    String username = "postgres";
-    String password = "bing";
-    public void TableCreator() {
 
+    public TableCreation(String dbTableName) {
+        this.dbTableName = dbTableName;
+    }
+
+    private String dbTableName;
+
+    String[] dbLoginInformation = DatabaseLoginLoader.loadDBloginInfo();
+
+    String jdbcUrl = dbLoginInformation[0];
+    String username = dbLoginInformation[1];
+    String password = dbLoginInformation[2];
+    public void TableCreator() {
 
         try {
             // Establish a database connection
@@ -21,9 +32,13 @@ public class TableCreation {
             Statement statement = connection.createStatement();
 
             // Define the SQL CREATE TABLE statement
-            String createTableSQL = "CREATE TABLE bogbot1 (" +
-                    "id serial PRIMARY KEY," +
-                    "name VARCHAR(255) NOT NULL" +
+            String createTableSQL = "CREATE TABLE "+dbTableName+ " ( " +
+                    "Id VARCHAR(25) PRIMARY KEY, " +
+                    "CONTENTRAW TEXT NOT NULL, " +
+                    "AUTHOR TEXT NOT NULL, " +
+                    "DATEOFMESSAGE TEXT NOT NULL, " +
+                    "IMAGE TEXT, " +
+                    "JUMPURL TEXT NOT NULL " +
                     ")";
 
             // Execute the SQL statement to create the table
@@ -31,9 +46,10 @@ public class TableCreation {
 
             // Close the resources
             statement.close();
+            statement.close();
             connection.close();
 
-            System.out.println("Table 'bogbot1' created successfully.");
+            System.out.println("Table "+dbTableName+ " created successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -48,7 +64,7 @@ public class TableCreation {
             Statement statement = connection.createStatement();
 
             // Define the SQL DROP TABLE statement
-            String dropTableSQL = "DROP TABLE IF EXISTS bogbot1";
+            String dropTableSQL = "DROP TABLE IF EXISTS "+dbTableName;
 
             // Execute the SQL statement to drop the table
             statement.executeUpdate(dropTableSQL);
@@ -57,7 +73,7 @@ public class TableCreation {
             statement.close();
             connection.close();
 
-            System.out.println("Table 'bogbot1' dropped successfully.");
+            System.out.println("Table "+dbTableName+ " dropped successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -59,5 +59,9 @@ public class MyEventListener extends ListenerAdapter {
             TextChannel textChannel = event.getChannel().asTextChannel();
             randomHistory.populateMessages(textChannel);
         }
+        if (message.equalsIgnoreCase("!dbload")) {
+            TextChannel textChannel = event.getChannel().asTextChannel();
+            randomHistory.populateDB(textChannel);
+        }
     }
 }

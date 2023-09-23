@@ -3,7 +3,6 @@ package org.bog.bot.db;
 
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -17,7 +16,7 @@ import java.sql.SQLException;
 public class dbConnectionTest {
 
 
-    TableCreation tableCreation = new TableCreation();
+    TableCreation tableCreation = new TableCreation("bogbot1");
 
     @BeforeEach
     private void setUp(){
