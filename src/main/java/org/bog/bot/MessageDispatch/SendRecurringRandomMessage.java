@@ -12,8 +12,8 @@ import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 @Data
-public class RandomMessageTask extends TimerTask {
-    private static final Logger logger = LoggerFactory.getLogger(RandomMessageTask.class);
+public class SendRecurringRandomMessage extends TimerTask {
+    private static final Logger logger = LoggerFactory.getLogger(SendRecurringRandomMessage.class);
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
 
     private Guild guild;
@@ -21,7 +21,7 @@ public class RandomMessageTask extends TimerTask {
     private List<TextChannel> booneChannels;
     private RandomQuoteSender randomQuoteSender;
 
-    public RandomMessageTask(Guild guild, TextChannel outputChannel, RandomQuoteSender randomQuoteSender) {
+    public SendRecurringRandomMessage(Guild guild, TextChannel outputChannel, RandomQuoteSender randomQuoteSender) {
         this.guild = guild;
         this.outputChannel = outputChannel;
         booneChannels = guild.getTextChannels();

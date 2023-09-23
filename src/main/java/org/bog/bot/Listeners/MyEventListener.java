@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.bog.bot.MessageDispatch.RandomMessageTask;
+import org.bog.bot.MessageDispatch.SendRecurringRandomMessage;
 import org.bog.bot.MessageRetrieval.MessageReader;
 import org.bog.bot.MessageDispatch.RandomQuoteSender;
 import org.bog.bot.db.DatabasePopulator;
@@ -112,7 +112,7 @@ public class MyEventListener extends ListenerAdapter {
         long delay = 0;  // Delay before the first execution (in milliseconds)
         long interval = 30000;  // Interval between executions (every 30 sec for testing)
         Guild guild = jda.getGuildById(431710770737184771L);
-        timer.scheduleAtFixedRate(new RandomMessageTask(guild, outputChannel,randomQuoteSender), delay, interval);
+        timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel,randomQuoteSender), delay, interval);
     }
 
     private void logHashMapSize(RandomQuoteSender randomQuoteSender) {
