@@ -4,7 +4,6 @@ import lombok.Data;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bog.bot.MessageDispatch.RandomQuoteSender;
-import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,17 +17,16 @@ public class RandomMessageTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(RandomMessageTask.class);
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
 
-
     private Guild guild;
     private TextChannel outputChannel;
-    List<TextChannel> booneChannels;
-    RandomQuoteSender randomQuoteSender;
+    private List<TextChannel> booneChannels;
+    private RandomQuoteSender randomQuoteSender;
 
     public RandomMessageTask(Guild guild, TextChannel outputChannel, RandomQuoteSender randomQuoteSender) {
         this.guild = guild;
         this.outputChannel = outputChannel;
-        this.randomQuoteSender = randomQuoteSender; // Pass RandomQuoteSender instance
         booneChannels = guild.getTextChannels();
+        this.randomQuoteSender = randomQuoteSender;
     }
     private int sizeRandomChannelSelector(List<TextChannel> filteredChannels){
         int size = filteredChannels.size();

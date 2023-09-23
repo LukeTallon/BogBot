@@ -1,12 +1,13 @@
 package org.bog.bot.db;
 
 import lombok.Data;
-import org.bog.bot.Utils.DatabaseLoginLoader;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import static org.bog.bot.Utils.Utils.loadDBloginInfo;
 
 @Data
 public class TableCreation {
@@ -18,7 +19,7 @@ public class TableCreation {
 
     private String dbTableName;
 
-    String[] dbLoginInformation = DatabaseLoginLoader.loadDBloginInfo();
+    String[] dbLoginInformation = loadDBloginInfo();
 
     String jdbcUrl = dbLoginInformation[0];
     String username = dbLoginInformation[1];

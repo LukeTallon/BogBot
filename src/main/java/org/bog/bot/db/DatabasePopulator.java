@@ -10,12 +10,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.bog.bot.Utils.Utils.discordQuoteBuilder;
 import static org.bog.bot.Utils.Utils.removeHyphensFromTableName;
 
 @Data
@@ -28,15 +27,13 @@ public class DatabasePopulator {
 
     private Map<Long, List<Message>> databaseMemoryMap = new ConcurrentHashMap<>();
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
-
 
     public void populateDB(TextChannel channel){
 
         if (databaseMemoryMap.containsKey(channel.getIdLong())) {
             writeAllMessageIdsToDB(channel, databaseMemoryMap.get(channel.getIdLong()));
         } else{
-            logger.info("populating the database is not possible, the hashmap does not contain {}'s data.",channel.getIdLong());
+            logger.info("populating the database is not possible, the hashmap does not contain channel {}'s data.",channel.getName());
         }
     }
 
@@ -55,7 +52,6 @@ public class DatabasePopulator {
         }else{
             logger.info("database name already exists so I'll come back to this scenario.");
         }
-
     }
 
     public DiscordQuote getRandomMessageFromDB(String dbTableName) {
@@ -82,34 +78,6 @@ public class DatabasePopulator {
         }
 
         return discordQuote;
-    }
-
-    private DiscordQuote discordQuoteBuilder(Message message) {
-        // Initialize a string to store image URLs
-        String imageUrls = null;
-
-        // Loop through the attachments to find image URLs
-        for (Message.Attachment attachment : message.getAttachments()) {
-            if (attachment.isImage()) {
-                // If it's the first image URL, initialize the string
-                if (imageUrls == null) {
-                    imageUrls = attachment.getUrl() + " \n";
-                } else {
-                    // If it's not the first, append it with a space and newline
-                    imageUrls += attachment.getUrl() + " \n";
-                }
-            }
-        }
-
-        // Build and return the DiscordQuote object
-        return DiscordQuote.builder()
-                .id(message.getId())
-                .contentRaw(message.getContentRaw())
-                .author(message.getAuthor().getEffectiveName())
-                .dateOfMessage(nicelyFormattedDateTime(message.getTimeCreated()))
-                .conditionalImage(imageUrls)
-                .jumpUrl(message.getJumpUrl())
-                .build();
     }
 
     public void insertMessage(DiscordQuote discordQuote, String dbTableName) {
@@ -154,9 +122,6 @@ public class DatabasePopulator {
             logger.info("table does not exist.");
             return false;
         }
-    }
-    private String nicelyFormattedDateTime(OffsetDateTime originalDateTime) {
-        return originalDateTime.format(formatter);
     }
 
 }

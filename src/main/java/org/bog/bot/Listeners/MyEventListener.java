@@ -77,15 +77,15 @@ public class MyEventListener extends ListenerAdapter {
             TextChannel outputChannel = guild.getTextChannelById(1154950416761630751L);
             logHashMapSize(randomQuoteSender);
         }
-        if (message.equalsIgnoreCase("!setupMemory")) {
+        if (message.equalsIgnoreCase("!sm")) {
             TextChannel outputChannel = guild.getTextChannelById(1154950416761630751L);
             populateAllRandomMessagesForPersonalChannel(outputChannel);
         }
-        if (message.equalsIgnoreCase("!setupDB")) {
+        if (message.equalsIgnoreCase("!sdb")) {
             TextChannel outputChannel = guild.getTextChannelById(1154950416761630751L);
             setupPersonalChannelDB();
         }
-        if (message.equalsIgnoreCase("!startRecurring")) {
+        if (message.equalsIgnoreCase("!start")) {
             TextChannel outputChannel = guild.getTextChannelById(1154950416761630751L);
             startRecurringPersonalChannel(outputChannel);
         }
