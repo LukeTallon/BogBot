@@ -1,9 +1,8 @@
-package org.bog.bot.botLogic;
+package org.bog.bot.MessageDispatch;
 
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.MessageDispatch.RandomQuoteSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

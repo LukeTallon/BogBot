@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.bog.bot.botLogic.RandomMessageTask;
+import org.bog.bot.MessageDispatch.RandomMessageTask;
 import org.bog.bot.MessageRetrieval.MessageReader;
 import org.bog.bot.MessageDispatch.RandomQuoteSender;
 import org.bog.bot.db.DatabasePopulator;

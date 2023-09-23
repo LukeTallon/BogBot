@@ -1,4 +1,4 @@
-package org.bog.bot.botLogic;
+package org.bog.bot.bogBotApp;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
