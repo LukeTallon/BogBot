@@ -1,6 +1,7 @@
 package org.bog.bot.db;
 
 import lombok.Data;
+import org.bog.bot.Utils.DatabaseLoginLoader;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

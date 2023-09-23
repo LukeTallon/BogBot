@@ -6,13 +6,14 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bog.bot.botLogic.RandomMessageTask;
-import org.bog.bot.stuff.RandomHistory;
+import org.bog.bot.MessageRetrieval.MessageReader;
+import org.bog.bot.MessageDispatch.RandomQuoteSender;
+import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Timer;
-import java.util.stream.Collectors;
 
 public class MyEventListener extends ListenerAdapter {
 
@@ -20,14 +21,18 @@ public class MyEventListener extends ListenerAdapter {
     public final String PERSONAL_DISCORD = "431710770737184771";
     public final String KACHIGGLES = "690915467778326549";
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
-    private RandomHistory randomHistory;
+    private RandomQuoteSender randomQuoteSender;
+    private MessageReader messageReader;
+    DatabasePopulator databasePopulator;
 
     private final JDA jda;
 
     public MyEventListener(JDA jda) {
         this.jda = jda;
         this.logger = LoggerFactory.getLogger(MyEventListener.class);
-        this.randomHistory = new RandomHistory(logger); // Pass the logger here
+        this.databasePopulator = new DatabasePopulator(logger);
+        this.randomQuoteSender = new RandomQuoteSender(logger,databasePopulator);
+        this.messageReader = new MessageReader(logger,databasePopulator);
     }
 
     @Override
@@ -70,7 +75,7 @@ public class MyEventListener extends ListenerAdapter {
     private void initialBotSetUpPersonalDiscord(Guild guild, String message) {
         if (message.equalsIgnoreCase("!check")) {
             TextChannel outputChannel = guild.getTextChannelById(1154950416761630751L);
-            logHashMapSize(randomHistory);
+            logHashMapSize(randomQuoteSender);
         }
         if (message.equalsIgnoreCase("!setupMemory")) {
             TextChannel outputChannel = guild.getTextChannelById(1154950416761630751L);
@@ -96,7 +101,7 @@ public class MyEventListener extends ListenerAdapter {
 
         for (TextChannel texty : filteredTextChannels) {
             System.out.println(texty.getName());
-            randomHistory.populateMessages(texty, outputChannel);
+            messageReader.populateMessages(texty, outputChannel);
         }
     }
 
@@ -107,11 +112,11 @@ public class MyEventListener extends ListenerAdapter {
         long delay = 0;  // Delay before the first execution (in milliseconds)
         long interval = 30000;  // Interval between executions (every 30 sec for testing)
         Guild guild = jda.getGuildById(431710770737184771L);
-        timer.scheduleAtFixedRate(new RandomMessageTask(guild, outputChannel), delay, interval);
+        timer.scheduleAtFixedRate(new RandomMessageTask(guild, outputChannel,randomQuoteSender), delay, interval);
     }
 
-    private void logHashMapSize(RandomHistory randomHistory) {
-        logger.info("keysets in memory: {}", randomHistory.getChannelMessageHistories().keySet());
+    private void logHashMapSize(RandomQuoteSender randomQuoteSender) {
+        logger.info("keysets in memory: {}", messageReader.getChannelMessageHistories().keySet());
     }
 
     private void setupPersonalChannelDB() {
@@ -123,7 +128,7 @@ public class MyEventListener extends ListenerAdapter {
 
 
         for (TextChannel texty : filteredTextChannels) {
-            randomHistory.getDatabasePopulator().populateDB(texty);
+            randomQuoteSender.getDatabasePopulator().populateDB(texty);
         }
     }
 
@@ -131,18 +136,18 @@ public class MyEventListener extends ListenerAdapter {
         if (message.equalsIgnoreCase("!randy")) {
             TextChannel textChannel = event.getChannel().asTextChannel();
 
-            String retrievedMessage = randomHistory.getRandomQuote(textChannel);
+            String retrievedMessage = randomQuoteSender.getRandomQuote(textChannel);
             String outGoingMessage = retrievedMessage.length() < 2000 ? retrievedMessage : MESSAGE_TOO_LONG;
 
             event.getChannel().sendMessage(outGoingMessage).queue();
         }
         if (message.equalsIgnoreCase("!load")) {
             TextChannel textChannel = event.getChannel().asTextChannel();
-            randomHistory.populateMessages(textChannel, textChannel);
+            messageReader.populateMessages(textChannel, textChannel);
         }
         if (message.equalsIgnoreCase("!dbload")) {
             TextChannel textChannel = event.getChannel().asTextChannel();
-            randomHistory.getDatabasePopulator().populateDB(textChannel);
+            randomQuoteSender.getDatabasePopulator().populateDB(textChannel);
         }
     }
 }

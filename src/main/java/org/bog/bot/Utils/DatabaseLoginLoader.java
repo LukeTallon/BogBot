@@ -1,4 +1,4 @@
-package org.bog.bot.db;
+package org.bog.bot.Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

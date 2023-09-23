@@ -1,9 +1,9 @@
-package org.bog.bot.stuff;
+package org.bog.bot.MessageRetrieval;
 
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.POJOs.DiscordQuote;
+import org.bog.bot.MessageDispatch.RandomQuoteSender;
 import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
 
@@ -15,33 +15,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-import static org.bog.bot.Utils.Utils.removeHyphensFromTableName;
-
 @Data
-public class RandomHistory {
+public class MessageReader {
 
-    private Logger logger;
+    RandomQuoteSender randomQuoteSender;
+    DatabasePopulator databasePopulator;
     private final Map<Long, List<Message>> channelMessageHistories = new ConcurrentHashMap<>();
-    private DatabasePopulator databasePopulator;
-    private MessageFormatter messageFormatter = new MessageFormatter();
+    private Logger logger;
 
-    public RandomHistory(Logger logger) {
-        this.logger = logger; // Initialize the logger here
-        this.databasePopulator = new DatabasePopulator(logger);
-    }
-
-    public String getRandomQuote(TextChannel channel) {
-
-        String dbTableName = removeHyphensFromTableName(channel.getName().concat(channel.getId()));
-
-        DiscordQuote randomFromDb = databasePopulator.getRandomMessageFromDB(dbTableName);
-
-        if (randomFromDb != null) {
-            logger.info("returning a random from database!");
-            return messageFormatter.formatMessageDetails(randomFromDb);
-        } else {
-            return "No messages in memory, please use '!dbload' to populate BogBot's database";
-        }
+    public MessageReader(Logger logger, DatabasePopulator databasePopulator) {
+        this.logger = logger;
+        this.databasePopulator = databasePopulator;
     }
 
     public void populateMessages(TextChannel channel, TextChannel outputChannel) {
@@ -57,6 +41,7 @@ public class RandomHistory {
         databasePopulator.setDatabaseMemoryMap(channelMessageHistories);
     }
 
+    //okay
     private CompletableFuture<List<Message>> retrieveAllMessages(TextChannel channel) {
         logger.info("Beginning message retrieval in channel: {}", channel.getIdLong());
         logger.info("This may take some time if the channel has a large number of messages.");
@@ -87,11 +72,8 @@ public class RandomHistory {
 
         completableFuture.thenAcceptAsync(callback);
     }
-
-
     //okay
     private int totalMessageCount(TextChannel channel) {
         return channelMessageHistories.get(channel.getIdLong()).size();
     }
-
 }

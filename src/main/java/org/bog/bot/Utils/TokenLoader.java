@@ -1,4 +1,4 @@
-package org.bog.bot.stuff;
+package org.bog.bot.Utils;
 
 import org.yaml.snakeyaml.Yaml;
 

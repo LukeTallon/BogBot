@@ -1,5 +1,6 @@
 package org.bog.bot.db;
 
+import org.bog.bot.Utils.DatabaseLoginLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

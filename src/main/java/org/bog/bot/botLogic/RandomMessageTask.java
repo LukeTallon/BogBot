@@ -3,7 +3,8 @@ package org.bog.bot.botLogic;
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.stuff.RandomHistory;
+import org.bog.bot.MessageDispatch.RandomQuoteSender;
+import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +22,12 @@ public class RandomMessageTask extends TimerTask {
     private Guild guild;
     private TextChannel outputChannel;
     List<TextChannel> booneChannels;
-    RandomHistory randomHistory = new RandomHistory(logger);
+    RandomQuoteSender randomQuoteSender;
 
-
-
-    public RandomMessageTask(Guild guild, TextChannel outputChannel) {
+    public RandomMessageTask(Guild guild, TextChannel outputChannel, RandomQuoteSender randomQuoteSender) {
         this.guild = guild;
         this.outputChannel = outputChannel;
+        this.randomQuoteSender = randomQuoteSender; // Pass RandomQuoteSender instance
         booneChannels = guild.getTextChannels();
     }
     private int sizeRandomChannelSelector(List<TextChannel> filteredChannels){
@@ -49,7 +49,7 @@ public class RandomMessageTask extends TimerTask {
 
         List<TextChannel> acceptableChannels = acceptableTextChannels(booneChannels);
 
-        String retrievedMessage = randomHistory.getRandomQuote(acceptableChannels.get(sizeRandomChannelSelector(acceptableChannels)));
+        String retrievedMessage = randomQuoteSender.getRandomQuote(acceptableChannels.get(sizeRandomChannelSelector(acceptableChannels)));
 
         String outGoingMessage = retrievedMessage.length() < 2000 ? retrievedMessage : MESSAGE_TOO_LONG;
 
