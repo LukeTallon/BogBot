@@ -27,11 +27,15 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.concurrent.CompletableFuture;
 
+import static org.bog.bot.Utils.Utils.loadTimerConfig;
+
 @Data
 public class BogBotEventListener extends ListenerAdapter {
 
     private static Logger logger;
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
+    public static final String BOGBOT_CHANNEL_NAME = "bogbot";
+    public static final String SETUP_COMMAND = "!setup";
 
     private TextChannel outputChannelField;
     private RandomQuoteSender randomQuoteSender;
@@ -80,7 +84,7 @@ public class BogBotEventListener extends ListenerAdapter {
         for (Guild guild : guilds) {
             Optional<TextChannel> textChannelOptional = guild.getTextChannels()
                     .stream()
-                    .filter(channel -> channel.getName().equals("bogbot"))
+                    .filter(channel -> channel.getName().equals(BOGBOT_CHANNEL_NAME))
                     .findFirst();
 
             textChannelOptional.ifPresent(textChannel -> resultMap.put(guild.getId(), textChannel));
@@ -94,7 +98,7 @@ public class BogBotEventListener extends ListenerAdapter {
     private void initializeBogBot(Guild guild, TextChannel outputChannel, String message) {
         if (message.equalsIgnoreCase("!setup")) {
             CompletableFuture<Void> setupFuture = readMessagesInGuildAsync(guild, outputChannel)
-                    .thenCompose(v -> CompletableFuture.runAsync(() -> outputChannel.sendMessage("Messages read, populating database...").queue()))
+                    .thenCompose(v -> CompletableFuture.runAsync(() -> outputChannel.sendMessage("Populating database...").queue()))
                     .thenCompose(v -> writeAllMessagesToDB(guild, outputChannel))
                     .thenCompose(v -> startSendingRecurringRandomMessageAsync(guild, outputChannel));
 
@@ -118,7 +122,7 @@ public class BogBotEventListener extends ListenerAdapter {
 
         List<TextChannel> filteredTextChannels = guild.getTextChannels()
                 .stream()
-                .filter(channel -> !channel.getName().equals("bogbot"))
+                .filter(channel -> !channel.getName().equals(BOGBOT_CHANNEL_NAME))
                 .toList();
 
         for (TextChannel textChannel : filteredTextChannels) {
@@ -134,10 +138,16 @@ public class BogBotEventListener extends ListenerAdapter {
 
     private void startSendingRecurringRandomMessage(Guild guild, TextChannel outputChannel) {
         Timer timer = new Timer();
+        long[] timerValues;
 
-        // Schedule a task to run every x (adjust the delay and interval as needed)
-        long delay = 0;  // Delay before the first execution (in milliseconds)
-        long interval = 30000;  // Interval between executions (every 30 sec for testing)
+        try {
+            timerValues = loadTimerConfig();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        long delay = timerValues[0];  // Delay before the first execution (in milliseconds)
+        long interval = timerValues[1];  // Interval between executions (every 30 sec for testing)
         timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel, randomQuoteSender), delay, interval);
     }
 
@@ -149,7 +159,7 @@ public class BogBotEventListener extends ListenerAdapter {
         return allPopulated.thenCompose(v -> {
             List<TextChannel> filteredTextChannels = guild.getTextChannels()
                     .stream()
-                    .filter(channel -> !channel.getName().equals("bogbot"))
+                    .filter(channel -> !channel.getName().equals(BOGBOT_CHANNEL_NAME))
                     .toList();
 
             for (TextChannel textChannel : filteredTextChannels) {
@@ -160,7 +170,7 @@ public class BogBotEventListener extends ListenerAdapter {
 
             Optional<TextChannel> bogBotsChannel = guild.getTextChannels()
                     .stream()
-                    .filter(channel -> channel.getName().equals("bogbot"))
+                    .filter(channel -> channel.getName().equals(BOGBOT_CHANNEL_NAME))
                     .findFirst();
 
             if (bogBotsChannel.isPresent()) {

@@ -74,6 +74,22 @@ public class Utils {
         }
     }
 
+    public static long[] loadTimerConfig() throws IOException {
+        // Load the token.yaml file
+        Path tokenPath = Paths.get("src/main/resources/timerConfig.yaml");
+        try (InputStream inputStream = Files.newInputStream(tokenPath)) {
+            // Parse the YAML content
+            Yaml yaml = new Yaml();
+            Map<String, String> yamlData = yaml.load(inputStream);
+
+            // Get the token from the YAML data
+            long timer = Long.parseLong(yamlData.get("timer"));
+            long delay = Long.parseLong(yamlData.get("delay"));
+
+            return new long[]{timer, delay};
+        }
+    }
+
     public static String[] loadDBloginInfo() {
         // Load the token.yaml file
         Path dbConfigPath = Paths.get("src/main/resources/dbConfig.yaml");

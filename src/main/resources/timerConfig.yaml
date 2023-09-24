@@ -1,0 +1,2 @@
+delay : 5000 # delay before first message
+interval : 30000  # random message interval
