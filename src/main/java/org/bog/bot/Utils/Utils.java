@@ -84,7 +84,7 @@ public class Utils {
             long interval = ((Number) yamlData.get("interval")).longValue() * 60000L;
             long delay = ((Number) yamlData.get("delay")).longValue() * 1000L;
 
-            return new long[]{delay,interval};
+            return new long[]{delay, interval};
         }
     }
 

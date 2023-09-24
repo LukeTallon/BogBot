@@ -26,14 +26,13 @@ import java.util.concurrent.CompletableFuture;
 import static org.bog.bot.Utils.Utils.loadTimerConfig;
 
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class BogBotEventListener extends ListenerAdapter {
 
-    private static Logger logger;
-    private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
     public static final String BOGBOT_CHANNEL_NAME = "bogbot";
     public static final String SETUP_COMMAND = "!setup";
-
+    private static Logger logger;
+    private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
     private TextChannel outputChannelField;
     private RandomQuoteSender randomQuoteSender;
     private MessageReader messageReader;
@@ -91,7 +90,6 @@ public class BogBotEventListener extends ListenerAdapter {
     }
 
 
-
     private void initializeBogBot(Guild guild, TextChannel outputChannel, String message) {
         if (message.equalsIgnoreCase("!setup")) {
             CompletableFuture<Void> setupFuture = readMessagesInGuildAsync(guild, outputChannel)
@@ -105,7 +103,7 @@ public class BogBotEventListener extends ListenerAdapter {
             });
         }
 
-        if (message.equalsIgnoreCase("!restart")){
+        if (message.equalsIgnoreCase("!restart")) {
             startSendingRecurringRandomMessage(guild, outputChannel);
         }
     }

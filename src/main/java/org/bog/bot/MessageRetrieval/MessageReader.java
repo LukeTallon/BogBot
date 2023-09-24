@@ -18,9 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MessageReader {
 
     private final Map<Long, List<Message>> channelMessageHistories = new ConcurrentHashMap<>();
+    private final List<CompletableFuture<Void>> populateFutures = new ArrayList<>();
     RandomQuoteSender randomQuoteSender;
     DatabasePopulator databasePopulator;
-    private final List<CompletableFuture<Void>> populateFutures = new ArrayList<>();
     private Logger logger;
 
     public MessageReader(Logger logger, DatabasePopulator databasePopulator) {
