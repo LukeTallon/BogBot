@@ -1,6 +1,7 @@
 package org.bog.bot.MessageDispatch;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.TimerTask;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class SendRecurringRandomMessage extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(SendRecurringRandomMessage.class);
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";

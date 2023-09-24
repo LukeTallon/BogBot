@@ -80,13 +80,13 @@ public class Utils {
         try (InputStream inputStream = Files.newInputStream(tokenPath)) {
             // Parse the YAML content
             Yaml yaml = new Yaml();
-            Map<String, String> yamlData = yaml.load(inputStream);
+            Map<String, Object> yamlData = yaml.load(inputStream);
 
-            // Get the token from the YAML data
-            long timer = Long.parseLong(yamlData.get("timer"));
-            long delay = Long.parseLong(yamlData.get("delay"));
+            // Get the values from the YAML data and cast them to long
+            long interval = ((Number) yamlData.get("interval")).longValue() * 60000L;
+            long delay = ((Number) yamlData.get("delay")).longValue() * 1000L;
 
-            return new long[]{timer, delay};
+            return new long[]{delay,interval};
         }
     }
 

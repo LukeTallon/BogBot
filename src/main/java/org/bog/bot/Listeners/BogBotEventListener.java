@@ -1,6 +1,7 @@
 package org.bog.bot.Listeners;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -30,6 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.bog.bot.Utils.Utils.loadTimerConfig;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class BogBotEventListener extends ListenerAdapter {
 
     private static Logger logger;
@@ -186,6 +188,4 @@ public class BogBotEventListener extends ListenerAdapter {
             return null;
         });
     }
-
-
 }
