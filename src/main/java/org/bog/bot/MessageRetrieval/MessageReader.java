@@ -41,7 +41,6 @@ public class MessageReader {
         databasePopulator.setDatabaseMemoryMap(channelMessageHistories);
     }
 
-    //okay
     private CompletableFuture<List<Message>> retrieveAllMessages(TextChannel channel) {
         logger.info("Beginning message retrieval in channel: {}", channel.getIdLong());
         logger.info("This may take some time if the channel has a large number of messages.");
@@ -65,7 +64,6 @@ public class MessageReader {
         });
     }
 
-    //okay
     private void acceptCompletableFuture(
             CompletableFuture<List<Message>> completableFuture,
             Consumer<List<Message>> callback) {
@@ -73,7 +71,6 @@ public class MessageReader {
         completableFuture.thenAcceptAsync(callback);
     }
 
-    //okay
     private int totalMessageCount(TextChannel channel) {
         return channelMessageHistories.get(channel.getIdLong()).size();
     }
