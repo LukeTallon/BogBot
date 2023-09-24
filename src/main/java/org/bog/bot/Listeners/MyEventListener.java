@@ -139,8 +139,6 @@ public class MyEventListener extends ListenerAdapter {
 
         System.out.println("Databases successfuly created");
 
-        setOutputChannelField(bogBotsChannel.get());
-
         JoinTablesIntoOne joinTables = new JoinTablesIntoOne(logger, bogBotsChannel.get());
         joinTables.join(filteredTextChannels);
     }
