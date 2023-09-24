@@ -21,6 +21,7 @@ public class MessageReader {
     private final Map<Long, List<Message>> channelMessageHistories = new ConcurrentHashMap<>();
     RandomQuoteSender randomQuoteSender;
     DatabasePopulator databasePopulator;
+    private final List<CompletableFuture<Void>> populateFutures = new ArrayList<>();
     private Logger logger;
 
     public MessageReader(Logger logger, DatabasePopulator databasePopulator) {
@@ -32,16 +33,30 @@ public class MessageReader {
         if (!channelMessageHistories.containsKey(channel.getIdLong())) {
             Message botLoadingResponse = outputChannel.sendMessage("Loading messages from " + channel.getName() + ", please wait...").complete();
             CompletableFuture<List<Message>> allMessages = retrieveAllMessages(channel);
-            acceptCompletableFuture(allMessages, messages -> {
 
+            // Here we are capturing the CompletableFuture returned by the thenAcceptAsync method.
+            CompletableFuture<Void> populateFuture = allMessages.thenAcceptAsync(messages -> {
                 channelMessageHistories.put(channel.getIdLong(), new ArrayList<>(messages));
                 logger.info("finale final size: {}", totalMessageCount(channel));
-
                 botLoadingResponse.editMessage(totalMessageCount(channel) + " messages retrieved from " + channel.getName()).queue();
             });
+
+            // We add the CompletableFuture to the populateFutures list in a thread-safe manner
+            synchronized (populateFutures) {
+                populateFutures.add(populateFuture);
+            }
         }
+
+        // Rest of your logic remains unchanged
         databasePopulator.setDatabaseMemoryMap(channelMessageHistories);
     }
+    public void afterAllPopulateActionsCompleted(Runnable action) {
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(
+                populateFutures.toArray(new CompletableFuture[0])
+        );
+        allOf.thenRun(action);
+    }
+
 
     private CompletableFuture<List<Message>> retrieveAllMessages(TextChannel channel) {
         logger.info("Beginning message retrieval in channel: {}", channel.getIdLong());

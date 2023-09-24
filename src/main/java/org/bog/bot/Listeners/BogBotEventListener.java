@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Timer;
+import java.util.concurrent.CompletableFuture;
 
 @Data
 public class BogBotEventListener extends ListenerAdapter {
@@ -83,18 +84,21 @@ public class BogBotEventListener extends ListenerAdapter {
     }
 
     private void initializeBogBot(Guild guild, TextChannel outputChannel, String message) {
-        if (message.equalsIgnoreCase("!check")) {
-            logHashMapSize(randomQuoteSender);
+        if (message.equalsIgnoreCase("!setup")) {
+            CompletableFuture<Void> setupFuture = readMessagesInGuildAsync(guild, outputChannel)
+                    .thenCompose(v -> writeAllMessagesToDBAsync(guild))
+                    .thenCompose(v -> startSendingRecurringRandomMessageAsync(guild, outputChannel));
+
+            setupFuture.exceptionally(e -> {
+                logger.error("An error occurred during setup: ", e);
+                return null;
+            });
         }
-        if (message.equalsIgnoreCase("!sm")) {
-            readMessagesInGuild(guild, outputChannel);
-        }
-        if (message.equalsIgnoreCase("!sdb")) {
-            writeAllMessagesToDB(guild);
-        }
-        if (message.equalsIgnoreCase("!start")) {
-            startSendingRecurringRandomMessage(guild, outputChannel);
-        }
+
+    }
+
+    private CompletableFuture<Void> readMessagesInGuildAsync(Guild guild, TextChannel outputChannel) {
+        return CompletableFuture.runAsync(() -> readMessagesInGuild(guild, outputChannel));
     }
 
     private void readMessagesInGuild(Guild guild, TextChannel outputChannel) {
@@ -110,6 +114,11 @@ public class BogBotEventListener extends ListenerAdapter {
         }
     }
 
+    private CompletableFuture<Void> startSendingRecurringRandomMessageAsync(Guild guild, TextChannel outputChannel) {
+        return CompletableFuture.runAsync(() -> startSendingRecurringRandomMessage(guild, outputChannel));
+    }
+
+
     private void startSendingRecurringRandomMessage(Guild guild, TextChannel outputChannel) {
         Timer timer = new Timer();
 
@@ -119,29 +128,37 @@ public class BogBotEventListener extends ListenerAdapter {
         timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel, randomQuoteSender), delay, interval);
     }
 
-    private void writeAllMessagesToDB(Guild guild) {
 
-        Optional<TextChannel> bogBotsChannel = guild.getTextChannels()
-                .stream()
-                .filter(channel -> channel.getName().equals("bogbot"))
-                .findFirst();
-
-        List<TextChannel> filteredTextChannels = guild.getTextChannels()
-                .stream()
-                .filter(channel -> !channel.getName().equals("bogbot"))
-                .toList();
-
-        for (TextChannel textChannel : filteredTextChannels) {
-            randomQuoteSender.getDatabasePopulator().populateDB(textChannel);
-        }
-
-        System.out.println("Databases successfuly created");
-
-        UnionTables joinTables = new UnionTables(logger, bogBotsChannel.get());
-        joinTables.join(filteredTextChannels);
+    private CompletableFuture<Void> writeAllMessagesToDBAsync(Guild guild) {
+        return CompletableFuture.runAsync(() -> writeAllMessagesToDB(guild));
     }
+    private void writeAllMessagesToDB(Guild guild) {
+        CompletableFuture<Void> allPopulated = CompletableFuture.allOf(
+                messageReader.getPopulateFutures().toArray(new CompletableFuture[0])
+        );
 
-    private void logHashMapSize(RandomQuoteSender randomQuoteSender) {
-        logger.info("keysets in memory: {}", messageReader.getChannelMessageHistories().keySet());
+        allPopulated.thenRun(() -> {
+            Optional<TextChannel> bogBotsChannel = guild.getTextChannels()
+                    .stream()
+                    .filter(channel -> channel.getName().equals("bogbot"))
+                    .findFirst();
+
+            List<TextChannel> filteredTextChannels = guild.getTextChannels()
+                    .stream()
+                    .filter(channel -> !channel.getName().equals("bogbot"))
+                    .toList();
+
+            for (TextChannel textChannel : filteredTextChannels) {
+                randomQuoteSender.getDatabasePopulator().populateDB(textChannel);
+            }
+
+            System.out.println("Databases successfully created");
+
+            UnionTables joinTables = new UnionTables(logger, bogBotsChannel.get());
+            joinTables.join(filteredTextChannels);
+        }).exceptionally(e -> {
+            logger.error("Error occurred while writing messages to DB", e);
+            return null;
+        });
     }
 }
