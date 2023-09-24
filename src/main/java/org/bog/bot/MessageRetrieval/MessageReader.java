@@ -18,9 +18,9 @@ import java.util.function.Consumer;
 @Data
 public class MessageReader {
 
+    private final Map<Long, List<Message>> channelMessageHistories = new ConcurrentHashMap<>();
     RandomQuoteSender randomQuoteSender;
     DatabasePopulator databasePopulator;
-    private final Map<Long, List<Message>> channelMessageHistories = new ConcurrentHashMap<>();
     private Logger logger;
 
     public MessageReader(Logger logger, DatabasePopulator databasePopulator) {
@@ -72,6 +72,7 @@ public class MessageReader {
 
         completableFuture.thenAcceptAsync(callback);
     }
+
     //okay
     private int totalMessageCount(TextChannel channel) {
         return channelMessageHistories.get(channel.getIdLong()).size();

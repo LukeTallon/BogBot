@@ -1,7 +1,6 @@
 package org.bog.bot.db;
 
 
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,17 +18,17 @@ public class dbConnectionTest {
     TableCreation tableCreation = new TableCreation("bogbot1");
 
     @BeforeEach
-    private void setUp(){
-    tableCreation.TableCreator();
+    private void setUp() {
+        tableCreation.TableCreator();
     }
 
     @AfterEach
-    private void afterScenario(){
+    private void afterScenario() {
         tableCreation.TableDropper();
     }
 
     @Test
-    public void testConnectDB(){
+    public void testConnectDB() {
         try {
             // Establish a database connection
             Connection connection = DatabaseConnection.connect();

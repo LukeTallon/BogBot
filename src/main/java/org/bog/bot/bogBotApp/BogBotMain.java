@@ -29,7 +29,6 @@ public class BogBotMain {
                 jda.addEventListener(new BogBotEventListener(jda, guilds));
 
 
-
             } else {
                 System.out.println("Token is missing or empty in token.yaml");
             }

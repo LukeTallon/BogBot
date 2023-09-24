@@ -11,8 +11,8 @@ public class MessageFormatter {
         appendIfNotNullOrEmpty(sb, rawMessageContent);
 
         sb
-          .append("- Posted by: ").append(discordQuote.getAuthor()).append("\n")
-          .append("- Date: ").append(discordQuote.getDateOfMessage()).append("\n");
+                .append("- Posted by: ").append(discordQuote.getAuthor()).append("\n")
+                .append("- Date: ").append(discordQuote.getDateOfMessage()).append("\n");
 
         appendIfNotNullOrEmpty(sb, discordQuote.getConditionalImage());
 
@@ -30,7 +30,6 @@ public class MessageFormatter {
     private String boldenText(String text) {
         if (text != null && !text.isEmpty()) {
             return "**" + text + "**";
-        }
-        else return null;
+        } else return null;
     }
 }

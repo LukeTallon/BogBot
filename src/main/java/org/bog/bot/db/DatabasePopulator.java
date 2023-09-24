@@ -20,36 +20,34 @@ import static org.bog.bot.Utils.Utils.removeHyphensFromTableName;
 @Data
 public class DatabasePopulator {
     private final Logger logger;
+    private Map<Long, List<Message>> databaseMemoryMap = new ConcurrentHashMap<>();
 
     public DatabasePopulator(Logger logger) {
         this.logger = logger;
     }
 
-    private Map<Long, List<Message>> databaseMemoryMap = new ConcurrentHashMap<>();
-
-
-    public void populateDB(TextChannel channel){
+    public void populateDB(TextChannel channel) {
 
         if (databaseMemoryMap.containsKey(channel.getIdLong())) {
             writeAllMessageIdsToDB(channel, databaseMemoryMap.get(channel.getIdLong()));
-        } else{
-            logger.info("populating the database is not possible, the hashmap does not contain channel {}'s data.",channel.getName());
+        } else {
+            logger.info("populating the database is not possible, the hashmap does not contain channel {}'s data.", channel.getName());
         }
     }
 
     private void writeAllMessageIdsToDB(TextChannel channel, List<Message> AllMessagesToDB) {
         String dbTableName = removeHyphensFromTableName(channel.getName().concat(channel.getId()));
-        logger.info("There are {} messages in the list",AllMessagesToDB.size());
+        logger.info("There are {} messages in the list", AllMessagesToDB.size());
         if (!tableExists(dbTableName)) {
-            logger.info("creating {} table.",dbTableName);
+            logger.info("creating {} table.", dbTableName);
             TableCreation tableCreation = new TableCreation(dbTableName);
             tableCreation.TableCreator();
             for (Message message : AllMessagesToDB) {
                 DiscordQuote discordQuote = discordQuoteBuilder(message);
-                insertMessage(discordQuote,dbTableName);
+                insertMessage(discordQuote, dbTableName);
             }
             logger.info("All Message Ids and raw content written to database");
-        }else{
+        } else {
             logger.info("database name already exists so I'll come back to this scenario.");
         }
     }
@@ -82,7 +80,7 @@ public class DatabasePopulator {
 
     public void insertMessage(DiscordQuote discordQuote, String dbTableName) {
 
-        String insertQuery = "INSERT INTO "+dbTableName+"  (id, contentraw, author, dateofmessage, image, jumpurl) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO " + dbTableName + "  (id, contentraw, author, dateofmessage, image, jumpurl) VALUES (?, ?, ?, ?, ?, ?)";
 
 
         try (Connection connection = DatabaseConnection.connect();
@@ -102,7 +100,7 @@ public class DatabasePopulator {
     }
 
 
-    private boolean tableExists(String dbTableName){
+    private boolean tableExists(String dbTableName) {
         String checkQuery = "SELECT COUNT(*) FROM " + dbTableName;
 
         try (Connection connection = DatabaseConnection.connect();

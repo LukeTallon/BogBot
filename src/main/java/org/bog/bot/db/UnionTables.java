@@ -40,7 +40,7 @@ public class UnionTables {
             joinQuery.append(" UNION ALL SELECT id, contentraw, author, dateOfMessage, image, jumpurl FROM ").append(correctTableNames.get(i));
         }
 
-        String createTableQuery = "CREATE TABLE combinedtable"+outputChannel.getGuild().getName().replaceAll("\\s","") + " (" +
+        String createTableQuery = "CREATE TABLE combinedtable" + outputChannel.getGuild().getName().replaceAll("\\s", "") + " (" +
                 "id VARCHAR(25) PRIMARY KEY, " +
                 "contentraw TEXT NOT NULL, " +
                 "author TEXT NOT NULL, " +
@@ -58,7 +58,7 @@ public class UnionTables {
             throw new RuntimeException("Failed to create the new table.", e);
         }
 
-        String insertDataQuery = "INSERT INTO CombinedTable"+outputChannel.getGuild().getName().replaceAll("\\s","") + " SELECT * FROM (" + joinQuery.toString() + ") AS CombinedData";
+        String insertDataQuery = "INSERT INTO CombinedTable" + outputChannel.getGuild().getName().replaceAll("\\s", "") + " SELECT * FROM (" + joinQuery + ") AS CombinedData";
 
         try (Connection connection = DatabaseConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(insertDataQuery)) {

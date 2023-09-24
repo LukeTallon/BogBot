@@ -73,7 +73,8 @@ public class Utils {
             return token;
         }
     }
-    public static String[] loadDBloginInfo()  {
+
+    public static String[] loadDBloginInfo() {
         // Load the token.yaml file
         Path dbConfigPath = Paths.get("src/main/resources/dbConfig.yaml");
         try (InputStream inputStream = Files.newInputStream(dbConfigPath)) {
@@ -86,7 +87,7 @@ public class Utils {
             String username = yamlData.get("username");
             String password = yamlData.get("password");
 
-            return new String[]{dbUrl,username,password};
+            return new String[]{dbUrl, username, password};
         } catch (IOException e) {
             logger.error("Error in DatabaseLoginLoader", e);
             throw new RuntimeException(e);

@@ -19,26 +19,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Timer;
+
 @Data
 public class BogBotEventListener extends ListenerAdapter {
 
     private static Logger logger;
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
+    TextChannel outputChannelField;
     private RandomQuoteSender randomQuoteSender;
     private MessageReader messageReader;
     private DatabasePopulator databasePopulator;
-    TextChannel outputChannelField;
-
     private JDA jda;
     private List<Guild> guilds;
 
     public BogBotEventListener(JDA jda, List<Guild> guilds) {
         this.jda = jda;
         this.guilds = guilds;
-        this.logger = LoggerFactory.getLogger(BogBotEventListener.class);
+        logger = LoggerFactory.getLogger(BogBotEventListener.class);
         this.databasePopulator = new DatabasePopulator(logger);
-        this.randomQuoteSender = new RandomQuoteSender(logger,databasePopulator);
-        this.messageReader = new MessageReader(logger,databasePopulator);
+        this.randomQuoteSender = new RandomQuoteSender(logger, databasePopulator);
+        this.messageReader = new MessageReader(logger, databasePopulator);
     }
 
 
@@ -53,7 +53,7 @@ public class BogBotEventListener extends ListenerAdapter {
                     Guild guild = event.getGuild();
 
                     String guildId = event.getGuild().getId();
-                    if (bogBotsChannels(guilds).containsKey(guildId)){
+                    if (bogBotsChannels(guilds).containsKey(guildId)) {
                         TextChannel outputChannel = bogBotsChannels(guilds).get(guildId);
                         initializeBogBot(guild, outputChannel, message);
                     }
@@ -114,7 +114,7 @@ public class BogBotEventListener extends ListenerAdapter {
         // Schedule a task to run every hour (adjust the delay and interval as needed)
         long delay = 0;  // Delay before the first execution (in milliseconds)
         long interval = 30000;  // Interval between executions (every 30 sec for testing)
-        timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel,randomQuoteSender), delay, interval);
+        timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel, randomQuoteSender), delay, interval);
     }
 
     private void logHashMapSize(RandomQuoteSender randomQuoteSender) {

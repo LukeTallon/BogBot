@@ -1,8 +1,6 @@
 package org.bog.bot.POJOs;
 
 
-
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

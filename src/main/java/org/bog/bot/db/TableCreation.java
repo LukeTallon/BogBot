@@ -13,17 +13,15 @@ import static org.bog.bot.Utils.Utils.loadDBloginInfo;
 public class TableCreation {
 
 
+    String[] dbLoginInformation = loadDBloginInfo();
+    String jdbcUrl = dbLoginInformation[0];
+    String username = dbLoginInformation[1];
+    String password = dbLoginInformation[2];
+    private String dbTableName;
     public TableCreation(String dbTableName) {
         this.dbTableName = dbTableName;
     }
 
-    private String dbTableName;
-
-    String[] dbLoginInformation = loadDBloginInfo();
-
-    String jdbcUrl = dbLoginInformation[0];
-    String username = dbLoginInformation[1];
-    String password = dbLoginInformation[2];
     public void TableCreator() {
 
         try {
@@ -34,7 +32,7 @@ public class TableCreation {
             Statement statement = connection.createStatement();
 
             // Define the SQL CREATE TABLE statement
-            String createTableSQL = "CREATE TABLE "+dbTableName+ " ( " +
+            String createTableSQL = "CREATE TABLE " + dbTableName + " ( " +
                     "Id VARCHAR(25) PRIMARY KEY, " +
                     "CONTENTRAW TEXT NOT NULL, " +
                     "AUTHOR TEXT NOT NULL, " +
@@ -51,7 +49,7 @@ public class TableCreation {
             statement.close();
             connection.close();
 
-            System.out.println("Table "+dbTableName+ " created successfully.");
+            System.out.println("Table " + dbTableName + " created successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -66,7 +64,7 @@ public class TableCreation {
             Statement statement = connection.createStatement();
 
             // Define the SQL DROP TABLE statement
-            String dropTableSQL = "DROP TABLE IF EXISTS "+dbTableName;
+            String dropTableSQL = "DROP TABLE IF EXISTS " + dbTableName;
 
             // Execute the SQL statement to drop the table
             statement.executeUpdate(dropTableSQL);
@@ -75,7 +73,7 @@ public class TableCreation {
             statement.close();
             connection.close();
 
-            System.out.println("Table "+dbTableName+ " dropped successfully.");
+            System.out.println("Table " + dbTableName + " dropped successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
