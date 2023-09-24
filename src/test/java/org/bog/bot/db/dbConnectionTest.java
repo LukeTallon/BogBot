@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class dbConnectionTest {
 
 
-    TableCreation tableCreation = new TableCreation("bogbot1");
+    final TableCreation tableCreation = new TableCreation("bogbot1");
 
     @BeforeEach
     private void setUp() {

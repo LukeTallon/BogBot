@@ -27,8 +27,7 @@ public class Utils {
             sb.replace(index, index + 1, ""); // Remove the hyphen
             index = sb.indexOf("-", index + 1); // Find the next hyphen
         }
-        String modifiedTableName = sb.toString();
-        return modifiedTableName;
+        return sb.toString();
     }
 
     public static DiscordQuote discordQuoteBuilder(Message message) {
@@ -68,9 +67,24 @@ public class Utils {
             Map<String, String> yamlData = yaml.load(inputStream);
 
             // Get the token from the YAML data
-            String token = yamlData.get("token");
 
-            return token;
+            return yamlData.get("token");
+        }
+    }
+
+    public static long[] loadTimerConfig() throws IOException {
+        // Load the token.yaml file
+        Path tokenPath = Paths.get("src/main/resources/timerConfig.yaml");
+        try (InputStream inputStream = Files.newInputStream(tokenPath)) {
+            // Parse the YAML content
+            Yaml yaml = new Yaml();
+            Map<String, Object> yamlData = yaml.load(inputStream);
+
+            // Get the values from the YAML data and cast them to long
+            long interval = ((Number) yamlData.get("interval")).longValue() * 60000L;
+            long delay = ((Number) yamlData.get("delay")).longValue() * 1000L;
+
+            return new long[]{delay, interval};
         }
     }
 

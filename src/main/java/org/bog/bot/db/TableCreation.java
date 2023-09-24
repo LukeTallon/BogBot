@@ -18,6 +18,7 @@ public class TableCreation {
     String username = dbLoginInformation[1];
     String password = dbLoginInformation[2];
     private String dbTableName;
+
     public TableCreation(String dbTableName) {
         this.dbTableName = dbTableName;
     }

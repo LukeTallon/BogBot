@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 @Data
 public class MessageReader {
 
     private final Map<Long, List<Message>> channelMessageHistories = new ConcurrentHashMap<>();
+    private final List<CompletableFuture<Void>> populateFutures = new ArrayList<>();
     RandomQuoteSender randomQuoteSender;
     DatabasePopulator databasePopulator;
     private Logger logger;
@@ -32,16 +32,24 @@ public class MessageReader {
         if (!channelMessageHistories.containsKey(channel.getIdLong())) {
             Message botLoadingResponse = outputChannel.sendMessage("Loading messages from " + channel.getName() + ", please wait...").complete();
             CompletableFuture<List<Message>> allMessages = retrieveAllMessages(channel);
-            acceptCompletableFuture(allMessages, messages -> {
 
+            // Here we are capturing the CompletableFuture returned by the thenAcceptAsync method.
+            CompletableFuture<Void> populateFuture = allMessages.thenAcceptAsync(messages -> {
                 channelMessageHistories.put(channel.getIdLong(), new ArrayList<>(messages));
                 logger.info("finale final size: {}", totalMessageCount(channel));
-
                 botLoadingResponse.editMessage(totalMessageCount(channel) + " messages retrieved from " + channel.getName()).queue();
             });
+
+            // We add the CompletableFuture to the populateFutures list in a thread-safe manner
+            synchronized (populateFutures) {
+                populateFutures.add(populateFuture);
+            }
         }
+
+        // Rest of your logic remains unchanged
         databasePopulator.setDatabaseMemoryMap(channelMessageHistories);
     }
+
 
     private CompletableFuture<List<Message>> retrieveAllMessages(TextChannel channel) {
         logger.info("Beginning message retrieval in channel: {}", channel.getIdLong());
@@ -64,13 +72,6 @@ public class MessageReader {
             logger.error("Error retrieving messages:", e);
             return Collections.emptyList();
         });
-    }
-
-    private void acceptCompletableFuture(
-            CompletableFuture<List<Message>> completableFuture,
-            Consumer<List<Message>> callback) {
-
-        completableFuture.thenAcceptAsync(callback);
     }
 
     private int totalMessageCount(TextChannel channel) {

@@ -14,7 +14,7 @@ import static org.bog.bot.Utils.Utils.removeHyphensFromTableName;
 
 public class UnionTables {
     private final Logger logger;
-    private TextChannel outputChannel;
+    private final TextChannel outputChannel;
 
     public UnionTables(Logger logger, TextChannel outputChannel) {
         this.logger = logger;
