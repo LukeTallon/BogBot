@@ -7,9 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Random;
 import java.util.TimerTask;
-import java.util.stream.Collectors;
 
 @Data
 public class SendRecurringRandomMessage extends TimerTask {
