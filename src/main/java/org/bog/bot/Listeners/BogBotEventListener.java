@@ -3,7 +3,6 @@ package org.bog.bot.Listeners;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -11,16 +10,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bog.bot.MessageDispatch.RandomQuoteSender;
 import org.bog.bot.MessageDispatch.SendRecurringRandomMessage;
 import org.bog.bot.MessageRetrieval.MessageReader;
-import org.bog.bot.Utils.Utils;
 import org.bog.bot.db.DatabasePopulator;
 import org.bog.bot.db.UnionTables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.net.http.WebSocket;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +96,7 @@ public class BogBotEventListener extends ListenerAdapter {
         if (message.equalsIgnoreCase("!setup")) {
             CompletableFuture<Void> setupFuture = readMessagesInGuildAsync(guild, outputChannel)
                     .thenCompose(v -> CompletableFuture.runAsync(() -> outputChannel.sendMessage("Populating database...").queue()))
-                    .thenCompose(v -> writeAllMessagesToDB(guild, outputChannel))
+                    .thenCompose(v -> writeAllMessagesToDB(guild))
                     .thenCompose(v -> startSendingRecurringRandomMessageAsync(guild, outputChannel));
 
             setupFuture.exceptionally(e -> {
@@ -153,7 +148,7 @@ public class BogBotEventListener extends ListenerAdapter {
         timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel, randomQuoteSender), delay, interval);
     }
 
-    private CompletableFuture<Void> writeAllMessagesToDB(Guild guild, TextChannel outputChannel) {
+    private CompletableFuture<Void> writeAllMessagesToDB(Guild guild) {
         CompletableFuture<Void> allPopulated = CompletableFuture.allOf(
                 messageReader.getPopulateFutures().toArray(new CompletableFuture[0])
         );

@@ -1,2 +1,2 @@
 delay : 5 # delay before first message (in seconds)
-interval : 1  # random message interval (in minutes) (minimum 1 minutes)
+interval : 1  # random message interval (in minutes) (minimum 1 minute)

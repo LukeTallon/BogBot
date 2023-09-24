@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 @Data
 public class MessageReader {
@@ -50,12 +49,6 @@ public class MessageReader {
         // Rest of your logic remains unchanged
         databasePopulator.setDatabaseMemoryMap(channelMessageHistories);
     }
-    public void afterAllPopulateActionsCompleted(Runnable action) {
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(
-                populateFutures.toArray(new CompletableFuture[0])
-        );
-        allOf.thenRun(action);
-    }
 
 
     private CompletableFuture<List<Message>> retrieveAllMessages(TextChannel channel) {
@@ -79,13 +72,6 @@ public class MessageReader {
             logger.error("Error retrieving messages:", e);
             return Collections.emptyList();
         });
-    }
-
-    private void acceptCompletableFuture(
-            CompletableFuture<List<Message>> completableFuture,
-            Consumer<List<Message>> callback) {
-
-        completableFuture.thenAcceptAsync(callback);
     }
 
     private int totalMessageCount(TextChannel channel) {

@@ -27,8 +27,7 @@ public class Utils {
             sb.replace(index, index + 1, ""); // Remove the hyphen
             index = sb.indexOf("-", index + 1); // Find the next hyphen
         }
-        String modifiedTableName = sb.toString();
-        return modifiedTableName;
+        return sb.toString();
     }
 
     public static DiscordQuote discordQuoteBuilder(Message message) {
@@ -68,9 +67,8 @@ public class Utils {
             Map<String, String> yamlData = yaml.load(inputStream);
 
             // Get the token from the YAML data
-            String token = yamlData.get("token");
 
-            return token;
+            return yamlData.get("token");
         }
     }
 
