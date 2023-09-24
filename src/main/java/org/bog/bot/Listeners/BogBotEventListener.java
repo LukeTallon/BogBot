@@ -10,7 +10,7 @@ import org.bog.bot.MessageDispatch.SendRecurringRandomMessage;
 import org.bog.bot.MessageRetrieval.MessageReader;
 import org.bog.bot.MessageDispatch.RandomQuoteSender;
 import org.bog.bot.db.DatabasePopulator;
-import org.bog.bot.db.JoinTablesIntoOne;
+import org.bog.bot.db.UnionTables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Timer;
 @Data
-public class MyEventListener extends ListenerAdapter {
+public class BogBotEventListener extends ListenerAdapter {
 
     private static Logger logger;
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
@@ -32,10 +32,10 @@ public class MyEventListener extends ListenerAdapter {
     private JDA jda;
     private List<Guild> guilds;
 
-    public MyEventListener(JDA jda, List<Guild> guilds) {
+    public BogBotEventListener(JDA jda, List<Guild> guilds) {
         this.jda = jda;
         this.guilds = guilds;
-        this.logger = LoggerFactory.getLogger(MyEventListener.class);
+        this.logger = LoggerFactory.getLogger(BogBotEventListener.class);
         this.databasePopulator = new DatabasePopulator(logger);
         this.randomQuoteSender = new RandomQuoteSender(logger,databasePopulator);
         this.messageReader = new MessageReader(logger,databasePopulator);
@@ -139,7 +139,7 @@ public class MyEventListener extends ListenerAdapter {
 
         System.out.println("Databases successfuly created");
 
-        JoinTablesIntoOne joinTables = new JoinTablesIntoOne(logger, bogBotsChannel.get());
+        UnionTables joinTables = new UnionTables(logger, bogBotsChannel.get());
         joinTables.join(filteredTextChannels);
     }
 }

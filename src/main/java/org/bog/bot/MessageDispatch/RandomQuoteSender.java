@@ -1,19 +1,17 @@
 package org.bog.bot.MessageDispatch;
 
 import lombok.Data;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bog.bot.MessageRetrieval.MessageFormatter;
 import org.bog.bot.POJOs.DiscordQuote;
 import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
-
-import static org.bog.bot.Utils.Utils.removeHyphensFromTableName;
 
 @Data
 public class RandomQuoteSender {
 
     private Logger logger;
     private DatabasePopulator databasePopulator;
+    private String dbTableName;
     private MessageFormatter messageFormatter = new MessageFormatter();
 
     public RandomQuoteSender(Logger logger, DatabasePopulator databasePopulator) {
@@ -21,9 +19,7 @@ public class RandomQuoteSender {
         this.databasePopulator = databasePopulator;
     }
 
-    public String getRandomQuote(TextChannel channel) {
-
-        String dbTableName = removeHyphensFromTableName(channel.getName().concat(channel.getId()));
+    public String getRandomQuote() {
 
         DiscordQuote randomFromDb = databasePopulator.getRandomMessageFromDB(dbTableName);
 

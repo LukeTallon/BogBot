@@ -12,11 +12,11 @@ import java.util.List;
 
 import static org.bog.bot.Utils.Utils.removeHyphensFromTableName;
 
-public class JoinTablesIntoOne {
+public class UnionTables {
     private final Logger logger;
     TextChannel outputChannel;
 
-    public JoinTablesIntoOne(Logger logger, TextChannel outputChannel) {
+    public UnionTables(Logger logger, TextChannel outputChannel) {
         this.logger = logger;
         this.outputChannel = outputChannel;
     }
@@ -40,7 +40,7 @@ public class JoinTablesIntoOne {
             joinQuery.append(" UNION ALL SELECT id, contentraw, author, dateOfMessage, image, jumpurl FROM ").append(correctTableNames.get(i));
         }
 
-        String createTableQuery = "CREATE TABLE combinedtable (" +
+        String createTableQuery = "CREATE TABLE combinedtable"+outputChannel.getGuild().getName().replaceAll("\\s","") + " (" +
                 "id VARCHAR(25) PRIMARY KEY, " +
                 "contentraw TEXT NOT NULL, " +
                 "author TEXT NOT NULL, " +
@@ -52,13 +52,13 @@ public class JoinTablesIntoOne {
         try (Connection connection = DatabaseConnection.connect();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(createTableQuery);
-            logger.info("Created new table 'combinedtable'.");
+            logger.info("Created new table 'combinedtable".concat(outputChannel.getGuild().getName()).concat("'."));
         } catch (SQLException e) {
             logger.error("Failed to create the new table.", e);
             throw new RuntimeException("Failed to create the new table.", e);
         }
 
-        String insertDataQuery = "INSERT INTO CombinedTable SELECT * FROM (" + joinQuery.toString() + ") AS CombinedData";
+        String insertDataQuery = "INSERT INTO CombinedTable"+outputChannel.getGuild().getName().replaceAll("\\s","") + " SELECT * FROM (" + joinQuery.toString() + ") AS CombinedData";
 
         try (Connection connection = DatabaseConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(insertDataQuery)) {

@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import org.bog.bot.Listeners.MyEventListener;
+import org.bog.bot.Listeners.BogBotEventListener;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +26,7 @@ public class BogBotMain {
 
                 List<Guild> guilds = jda.awaitReady().getGuilds();
 
-                jda.addEventListener(new MyEventListener(jda, guilds));
+                jda.addEventListener(new BogBotEventListener(jda, guilds));
 
 
 

@@ -27,26 +27,13 @@ public class SendRecurringRandomMessage extends TimerTask {
         booneChannels = guild.getTextChannels();
         this.randomQuoteSender = randomQuoteSender;
     }
-    private int sizeRandomChannelSelector(List<TextChannel> filteredChannels){
-        int size = filteredChannels.size();
-        Random random = new Random();
 
-        return random.nextInt(size);
-    }
-
-    private List<TextChannel> acceptableTextChannels(List<TextChannel> booneChannels){
-
-        return booneChannels
-                .stream()
-                .filter(channel -> channel.getIdLong() != outputChannel.getIdLong())
-                .collect(Collectors.toList());
-    }
     @Override
     public void run() {
 
-        List<TextChannel> acceptableChannels = acceptableTextChannels(booneChannels);
+        randomQuoteSender.setDbTableName("combinedtable"+guild.getName().replaceAll("\\s",""));
 
-        String retrievedMessage = randomQuoteSender.getRandomQuote(acceptableChannels.get(sizeRandomChannelSelector(acceptableChannels)));
+        String retrievedMessage = randomQuoteSender.getRandomQuote();
 
         String outGoingMessage = retrievedMessage.length() < 2000 ? retrievedMessage : MESSAGE_TOO_LONG;
 
