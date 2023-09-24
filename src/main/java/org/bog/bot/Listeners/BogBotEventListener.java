@@ -2,6 +2,7 @@ package org.bog.bot.Listeners;
 
 import lombok.Data;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -9,11 +10,16 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bog.bot.MessageDispatch.RandomQuoteSender;
 import org.bog.bot.MessageDispatch.SendRecurringRandomMessage;
 import org.bog.bot.MessageRetrieval.MessageReader;
+import org.bog.bot.Utils.Utils;
 import org.bog.bot.db.DatabasePopulator;
 import org.bog.bot.db.UnionTables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.security.auth.login.LoginException;
+import java.io.IOException;
+import java.net.http.WebSocket;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +89,12 @@ public class BogBotEventListener extends ListenerAdapter {
         return resultMap;
     }
 
+
+
     private void initializeBogBot(Guild guild, TextChannel outputChannel, String message) {
         if (message.equalsIgnoreCase("!setup")) {
             CompletableFuture<Void> setupFuture = readMessagesInGuildAsync(guild, outputChannel)
-                    .thenCompose(v -> writeAllMessagesToDBAsync(guild))
+                    .thenCompose(v -> writeAllMessagesToDB(guild)) // Ensure that this returns CompletableFuture<Void>
                     .thenCompose(v -> startSendingRecurringRandomMessageAsync(guild, outputChannel));
 
             setupFuture.exceptionally(e -> {
@@ -94,8 +102,8 @@ public class BogBotEventListener extends ListenerAdapter {
                 return null;
             });
         }
-
     }
+
 
     private CompletableFuture<Void> readMessagesInGuildAsync(Guild guild, TextChannel outputChannel) {
         return CompletableFuture.runAsync(() -> readMessagesInGuild(guild, outputChannel));
@@ -132,12 +140,11 @@ public class BogBotEventListener extends ListenerAdapter {
     private CompletableFuture<Void> writeAllMessagesToDBAsync(Guild guild) {
         return CompletableFuture.runAsync(() -> writeAllMessagesToDB(guild));
     }
-    private void writeAllMessagesToDB(Guild guild) {
+    private CompletableFuture<Void> writeAllMessagesToDB(Guild guild) {
         CompletableFuture<Void> allPopulated = CompletableFuture.allOf(
                 messageReader.getPopulateFutures().toArray(new CompletableFuture[0])
         );
-
-        allPopulated.thenRun(() -> {
+        return allPopulated.thenCompose(v -> {
             Optional<TextChannel> bogBotsChannel = guild.getTextChannels()
                     .stream()
                     .filter(channel -> channel.getName().equals("bogbot"))
@@ -151,14 +158,14 @@ public class BogBotEventListener extends ListenerAdapter {
             for (TextChannel textChannel : filteredTextChannels) {
                 randomQuoteSender.getDatabasePopulator().populateDB(textChannel);
             }
-
             System.out.println("Databases successfully created");
 
             UnionTables joinTables = new UnionTables(logger, bogBotsChannel.get());
-            joinTables.join(filteredTextChannels);
+            return CompletableFuture.runAsync(() -> joinTables.join(filteredTextChannels));
         }).exceptionally(e -> {
             logger.error("Error occurred while writing messages to DB", e);
             return null;
         });
     }
+
 }
