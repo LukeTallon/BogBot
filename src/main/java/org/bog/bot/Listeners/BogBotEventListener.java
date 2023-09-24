@@ -141,16 +141,12 @@ public class BogBotEventListener extends ListenerAdapter {
         timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel, randomQuoteSender), delay, interval);
     }
 
-    private CompletableFuture<Void> writeAllMessagesToDB(Guild guild, TextChannel  outputChannel) {
+    private CompletableFuture<Void> writeAllMessagesToDB(Guild guild, TextChannel outputChannel) {
         CompletableFuture<Void> allPopulated = CompletableFuture.allOf(
                 messageReader.getPopulateFutures().toArray(new CompletableFuture[0])
         );
-        return allPopulated.thenCompose(v -> {
-            Optional<TextChannel> bogBotsChannel = guild.getTextChannels()
-                    .stream()
-                    .filter(channel -> channel.getName().equals("bogbot"))
-                    .findFirst();
 
+        return allPopulated.thenCompose(v -> {
             List<TextChannel> filteredTextChannels = guild.getTextChannels()
                     .stream()
                     .filter(channel -> !channel.getName().equals("bogbot"))
@@ -159,14 +155,27 @@ public class BogBotEventListener extends ListenerAdapter {
             for (TextChannel textChannel : filteredTextChannels) {
                 randomQuoteSender.getDatabasePopulator().populateDB(textChannel);
             }
-            System.out.println("Databases successfully created");
 
-            UnionTables joinTables = new UnionTables(logger, bogBotsChannel.get());
-            return CompletableFuture.runAsync(() -> joinTables.join(filteredTextChannels));
+            logger.info("Databases successfully created");
+
+            Optional<TextChannel> bogBotsChannel = guild.getTextChannels()
+                    .stream()
+                    .filter(channel -> channel.getName().equals("bogbot"))
+                    .findFirst();
+
+            if (bogBotsChannel.isPresent()) {
+                UnionTables joinTables = new UnionTables(logger, bogBotsChannel.get());
+                return CompletableFuture.runAsync(() -> joinTables.join(filteredTextChannels));
+            } else {
+                logger.error("bogBotsChannel is not present");
+                // Returning a completed CompletableFuture exceptionally as bogBotsChannel is not present.
+                return CompletableFuture.failedFuture(new IllegalStateException("bogBotsChannel is not present"));
+            }
         }).exceptionally(e -> {
             logger.error("Error occurred while writing messages to DB", e);
             return null;
         });
     }
+
 
 }
