@@ -94,13 +94,18 @@ public class BogBotEventListener extends ListenerAdapter {
     private void initializeBogBot(Guild guild, TextChannel outputChannel, String message) {
         if (message.equalsIgnoreCase("!setup")) {
             CompletableFuture<Void> setupFuture = readMessagesInGuildAsync(guild, outputChannel)
-                    .thenCompose(v -> writeAllMessagesToDB(guild)) // Ensure that this returns CompletableFuture<Void>
+                    .thenCompose(v -> CompletableFuture.runAsync(() -> outputChannel.sendMessage("Messages read, populating database...").queue()))
+                    .thenCompose(v -> writeAllMessagesToDB(guild, outputChannel))
                     .thenCompose(v -> startSendingRecurringRandomMessageAsync(guild, outputChannel));
 
             setupFuture.exceptionally(e -> {
                 logger.error("An error occurred during setup: ", e);
                 return null;
             });
+        }
+
+        if (message.equalsIgnoreCase("!restart")){
+            startSendingRecurringRandomMessage(guild, outputChannel);
         }
     }
 
@@ -136,11 +141,7 @@ public class BogBotEventListener extends ListenerAdapter {
         timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel, randomQuoteSender), delay, interval);
     }
 
-
-    private CompletableFuture<Void> writeAllMessagesToDBAsync(Guild guild) {
-        return CompletableFuture.runAsync(() -> writeAllMessagesToDB(guild));
-    }
-    private CompletableFuture<Void> writeAllMessagesToDB(Guild guild) {
+    private CompletableFuture<Void> writeAllMessagesToDB(Guild guild, TextChannel  outputChannel) {
         CompletableFuture<Void> allPopulated = CompletableFuture.allOf(
                 messageReader.getPopulateFutures().toArray(new CompletableFuture[0])
         );
