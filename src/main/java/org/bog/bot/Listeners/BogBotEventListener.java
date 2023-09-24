@@ -30,6 +30,7 @@ import static org.bog.bot.Utils.Utils.loadTimerConfig;
 public class BogBotEventListener extends ListenerAdapter {
 
     public static final String BOGBOT_CHANNEL_NAME = "bogbot";
+    public static final String FRIENDS_SPOILER_CHANNEL = "spoilertalk";
     public static final String SETUP_COMMAND = "!setup";
     private static Logger logger;
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
@@ -117,7 +118,7 @@ public class BogBotEventListener extends ListenerAdapter {
 
         List<TextChannel> filteredTextChannels = guild.getTextChannels()
                 .stream()
-                .filter(channel -> !channel.getName().equals(BOGBOT_CHANNEL_NAME))
+                .filter(channel -> !channel.getName().equals(BOGBOT_CHANNEL_NAME) && !channel.getName().equals(FRIENDS_SPOILER_CHANNEL))
                 .toList();
 
         for (TextChannel textChannel : filteredTextChannels) {
@@ -154,8 +155,7 @@ public class BogBotEventListener extends ListenerAdapter {
         return allPopulated.thenCompose(v -> {
             List<TextChannel> filteredTextChannels = guild.getTextChannels()
                     .stream()
-                    .filter(channel -> !channel.getName().equals(BOGBOT_CHANNEL_NAME))
-                    .toList();
+                    .filter(channel -> !channel.getName().equals(BOGBOT_CHANNEL_NAME) && !channel.getName().equals(FRIENDS_SPOILER_CHANNEL))                    .toList();
 
             for (TextChannel textChannel : filteredTextChannels) {
                 randomQuoteSender.getDatabasePopulator().populateDB(textChannel);
