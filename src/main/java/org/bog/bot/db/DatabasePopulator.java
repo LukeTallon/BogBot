@@ -35,14 +35,16 @@ public class DatabasePopulator {
         }
     }
 
-    private void writeAllMessageIdsToDB(TextChannel channel, List<Message> AllMessagesToDB) {
+    private void writeAllMessageIdsToDB(TextChannel channel, List<Message> AllMessagesInChannel) {
+
         String dbTableName = removeHyphensFromTableName(channel.getName().concat(channel.getId()));
-        logger.info("There are {} messages in the list", AllMessagesToDB.size());
+        logger.info("There are {} messages in the list", AllMessagesInChannel.size());
+
         if (!tableExists(dbTableName)) {
             logger.info("creating {} table.", dbTableName);
             TableCreation tableCreation = new TableCreation(dbTableName);
             tableCreation.TableCreator();
-            for (Message message : AllMessagesToDB) {
+            for (Message message : AllMessagesInChannel) {
                 DiscordQuote discordQuote = discordQuoteBuilder(message);
                 insertMessage(discordQuote, dbTableName);
             }

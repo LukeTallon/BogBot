@@ -25,7 +25,8 @@ public class BogBotEventListener extends ListenerAdapter {
 
     private static Logger logger;
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
-    TextChannel outputChannelField;
+
+    private TextChannel outputChannelField;
     private RandomQuoteSender randomQuoteSender;
     private MessageReader messageReader;
     private DatabasePopulator databasePopulator;
@@ -41,7 +42,6 @@ public class BogBotEventListener extends ListenerAdapter {
         this.messageReader = new MessageReader(logger, databasePopulator);
     }
 
-
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         try {
@@ -50,11 +50,13 @@ public class BogBotEventListener extends ListenerAdapter {
 
                 // Check if the message was sent in a server
                 if (event.isFromGuild()) {
-                    Guild guild = event.getGuild();
 
+                    Guild guild = event.getGuild();
                     String guildId = event.getGuild().getId();
-                    if (bogBotsChannels(guilds).containsKey(guildId)) {
-                        TextChannel outputChannel = bogBotsChannels(guilds).get(guildId);
+                    Map<String, TextChannel> bogBotsHomes = bogBotsChannels(guilds);
+
+                    if (bogBotsHomes.containsKey(guildId)) {
+                        TextChannel outputChannel = bogBotsHomes.get(guildId);
                         initializeBogBot(guild, outputChannel, message);
                     }
                 }
@@ -85,43 +87,39 @@ public class BogBotEventListener extends ListenerAdapter {
             logHashMapSize(randomQuoteSender);
         }
         if (message.equalsIgnoreCase("!sm")) {
-            populateAllRandomMessagesForPersonalChannel(guild, outputChannel);
+            readMessagesInGuild(guild, outputChannel);
         }
         if (message.equalsIgnoreCase("!sdb")) {
-            setupPersonalChannelDB(guild);
+            writeAllMessagesToDB(guild);
         }
         if (message.equalsIgnoreCase("!start")) {
-            startRecurringPersonalChannel(guild, outputChannel);
+            startSendingRecurringRandomMessage(guild, outputChannel);
         }
     }
 
-    private void populateAllRandomMessagesForPersonalChannel(Guild guild, TextChannel outputChannel) {
+    private void readMessagesInGuild(Guild guild, TextChannel outputChannel) {
 
         List<TextChannel> filteredTextChannels = guild.getTextChannels()
                 .stream()
                 .filter(channel -> !channel.getName().equals("bogbot"))
                 .toList();
 
-        for (TextChannel texty : filteredTextChannels) {
-            System.out.println(texty.getName());
-            messageReader.populateMessages(texty, outputChannel);
+        for (TextChannel textChannel : filteredTextChannels) {
+            System.out.println(textChannel.getName());
+            messageReader.populateMessages(textChannel, outputChannel);
         }
     }
 
-    private void startRecurringPersonalChannel(Guild guild, TextChannel outputChannel) {
+    private void startSendingRecurringRandomMessage(Guild guild, TextChannel outputChannel) {
         Timer timer = new Timer();
 
-        // Schedule a task to run every hour (adjust the delay and interval as needed)
+        // Schedule a task to run every x (adjust the delay and interval as needed)
         long delay = 0;  // Delay before the first execution (in milliseconds)
         long interval = 30000;  // Interval between executions (every 30 sec for testing)
         timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel, randomQuoteSender), delay, interval);
     }
 
-    private void logHashMapSize(RandomQuoteSender randomQuoteSender) {
-        logger.info("keysets in memory: {}", messageReader.getChannelMessageHistories().keySet());
-    }
-
-    private void setupPersonalChannelDB(Guild guild) {
+    private void writeAllMessagesToDB(Guild guild) {
 
         Optional<TextChannel> bogBotsChannel = guild.getTextChannels()
                 .stream()
@@ -133,13 +131,17 @@ public class BogBotEventListener extends ListenerAdapter {
                 .filter(channel -> !channel.getName().equals("bogbot"))
                 .toList();
 
-        for (TextChannel texty : filteredTextChannels) {
-            randomQuoteSender.getDatabasePopulator().populateDB(texty);
+        for (TextChannel textChannel : filteredTextChannels) {
+            randomQuoteSender.getDatabasePopulator().populateDB(textChannel);
         }
 
         System.out.println("Databases successfuly created");
 
         UnionTables joinTables = new UnionTables(logger, bogBotsChannel.get());
         joinTables.join(filteredTextChannels);
+    }
+
+    private void logHashMapSize(RandomQuoteSender randomQuoteSender) {
+        logger.info("keysets in memory: {}", messageReader.getChannelMessageHistories().keySet());
     }
 }

@@ -33,8 +33,10 @@ public class MessageReader {
             Message botLoadingResponse = outputChannel.sendMessage("Loading messages from " + channel.getName() + ", please wait...").complete();
             CompletableFuture<List<Message>> allMessages = retrieveAllMessages(channel);
             acceptCompletableFuture(allMessages, messages -> {
+
                 channelMessageHistories.put(channel.getIdLong(), new ArrayList<>(messages));
                 logger.info("finale final size: {}", totalMessageCount(channel));
+
                 botLoadingResponse.editMessage(totalMessageCount(channel) + " messages retrieved from " + channel.getName()).queue();
             });
         }
@@ -48,7 +50,7 @@ public class MessageReader {
         return CompletableFuture.supplyAsync(() -> {
             List<Message> messageList = new ArrayList<>();
 
-            // Retrieve and process messages from MessageHistory
+            // Retrieve and process messages
             for (Message message : channel.getIterableHistory()) {
                 messageList.add(message);
                 if (messageList.size() % 1000 == 0) {

@@ -14,7 +14,7 @@ import static org.bog.bot.Utils.Utils.removeHyphensFromTableName;
 
 public class UnionTables {
     private final Logger logger;
-    TextChannel outputChannel;
+    private TextChannel outputChannel;
 
     public UnionTables(Logger logger, TextChannel outputChannel) {
         this.logger = logger;
@@ -22,7 +22,6 @@ public class UnionTables {
     }
 
     public void join(List<TextChannel> filteredTextChannels) {
-
         List<String> correctTableNames = extractTableNamesFromList(filteredTextChannels);
 
         if (correctTableNames.isEmpty()) {
@@ -30,17 +29,44 @@ public class UnionTables {
             return;
         }
 
-        // Build the SQL query to join tables using UNION ALL
-        StringBuilder joinQuery = new StringBuilder("SELECT id, contentraw, author, dateOfMessage, image, jumpurl FROM ");
+        String combinedTableName = createCombinedTable();
+        String joinQuery = buildJoinQuery(correctTableNames, combinedTableName);
+        insertDataIntoCombinedTable(joinQuery, combinedTableName);
 
-        joinQuery.append(correctTableNames.get(0));
+        //dropping old tables to clean up database.
+        dropOtherTables(correctTableNames);
+    }
 
-        // Add UNION ALL clauses for the remaining tables
-        for (int i = 1; i < correctTableNames.size(); i++) {
-            joinQuery.append(" UNION ALL SELECT id, contentraw, author, dateOfMessage, image, jumpurl FROM ").append(correctTableNames.get(i));
+    private List<String> extractTableNamesFromList(List<TextChannel> filteredTextChannels) {
+        List<String> tableNames = new ArrayList<>();
+
+        for (TextChannel filteredTextChannel : filteredTextChannels) {
+            tableNames.add(removeHyphensFromTableName(filteredTextChannel.getName().concat(filteredTextChannel.getId())));
+        }
+        return tableNames;
+    }
+
+    private String createCombinedTable() {
+        String tableName = generateCombinedTableName();
+        String createTableQuery = generateCreateTableQuery(tableName);
+
+        try {
+            executeCreateTableQuery(createTableQuery);
+            logger.info("Created new table '" + tableName + "'.");
+        } catch (SQLException e) {
+            logger.error("Failed to create the new table.", e);
+            throw new RuntimeException("Failed to create the new table.", e);
         }
 
-        String createTableQuery = "CREATE TABLE combinedtable" + outputChannel.getGuild().getName().replaceAll("\\s", "") + " (" +
+        return tableName;
+    }
+
+    private String generateCombinedTableName() {
+        return "combinedtable" + outputChannel.getGuild().getName().replaceAll("\\s", "");
+    }
+
+    private String generateCreateTableQuery(String tableName) {
+        return "CREATE TABLE " + tableName + " (" +
                 "id VARCHAR(25) PRIMARY KEY, " +
                 "contentraw TEXT NOT NULL, " +
                 "author TEXT NOT NULL, " +
@@ -48,29 +74,37 @@ public class UnionTables {
                 "image TEXT, " +
                 "jumpurl TEXT NOT NULL" +
                 ")";
+    }
 
+    private void executeCreateTableQuery(String createTableQuery) throws SQLException {
         try (Connection connection = DatabaseConnection.connect();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(createTableQuery);
-            logger.info("Created new table 'combinedtable".concat(outputChannel.getGuild().getName()).concat("'."));
-        } catch (SQLException e) {
-            logger.error("Failed to create the new table.", e);
-            throw new RuntimeException("Failed to create the new table.", e);
+        }
+    }
+
+    private String buildJoinQuery(List<String> tableNames, String combinedTableName) {
+        StringBuilder joinQuery = new StringBuilder("SELECT id, contentraw, author, dateOfMessage, image, jumpurl FROM ");
+        joinQuery.append(tableNames.get(0));
+
+        for (int i = 1; i < tableNames.size(); i++) {
+            joinQuery.append(" UNION ALL SELECT id, contentraw, author, dateOfMessage, image, jumpurl FROM ")
+                    .append(tableNames.get(i));
         }
 
-        String insertDataQuery = "INSERT INTO CombinedTable" + outputChannel.getGuild().getName().replaceAll("\\s", "") + " SELECT * FROM (" + joinQuery + ") AS CombinedData";
+        return "INSERT INTO " + combinedTableName + " SELECT * FROM (" + joinQuery + ") AS CombinedData";
+    }
 
+    private void insertDataIntoCombinedTable(String insertDataQuery, String combinedTableName) {
         try (Connection connection = DatabaseConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(insertDataQuery)) {
 
             preparedStatement.executeUpdate();
-            logger.info("Inserted data into 'combinedtable'.");
+            logger.info("Inserted data into '" + combinedTableName + "'.");
         } catch (SQLException e) {
             logger.error("Failed to insert data into the new table.", e);
             throw new RuntimeException("Failed to insert data into the new table.", e);
         }
-
-        dropOtherTables(correctTableNames);
     }
 
     private void dropOtherTables(List<String> tableNamesToDrop) {
@@ -87,12 +121,4 @@ public class UnionTables {
         outputChannel.sendMessage("Database populated and ready!").queue();
     }
 
-    private List<String> extractTableNamesFromList(List<TextChannel> filteredTextChannels) {
-        List<String> tableNames = new ArrayList<>();
-
-        for (TextChannel filteredTextChannel : filteredTextChannels) {
-            tableNames.add(removeHyphensFromTableName(filteredTextChannel.getName().concat(filteredTextChannel.getId())));
-        }
-        return tableNames;
-    }
 }
