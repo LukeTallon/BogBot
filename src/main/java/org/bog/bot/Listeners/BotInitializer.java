@@ -43,7 +43,7 @@ public class BotInitializer {
 
         if (message.equalsIgnoreCase("!rq")) {
             String finalTableName = "combinedtable" + guild.getName().replaceAll("\\s", "");
-            randomQuoteShipper.getRandomQuote(finalTableName);
+            outputChannel.sendMessage(randomQuoteShipper.getRandomQuote(finalTableName)).queue();
         }
 
         if (message.equalsIgnoreCase("!restart")) {
