@@ -2,7 +2,7 @@
 FROM openjdk:17
 
 # Define a default value for the JAR file
-ARG JAR_FILE=target/bogBot-0.2.0-SNAPSHOT.jar
+ARG JAR_FILE=target/bogBot-0.3.0-SNAPSHOT.jar
 
 # Create a directory for dependencies
 RUN mkdir -p /app-lib

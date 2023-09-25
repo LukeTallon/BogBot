@@ -41,6 +41,11 @@ public class BotInitializer {
             });
         }
 
+        if (message.equalsIgnoreCase("!rq")) {
+            String finalTableName = "combinedtable" + guild.getName().replaceAll("\\s", "");
+            randomQuoteShipper.getRandomQuote(finalTableName);
+        }
+
         if (message.equalsIgnoreCase("!restart")) {
             new BeginSendingMessageStage(logger, randomQuoteShipper).startSendingRecurringRandomMessage(guild, outputChannel);
         }
