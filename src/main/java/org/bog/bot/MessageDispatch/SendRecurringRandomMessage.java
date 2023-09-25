@@ -19,21 +19,23 @@ public class SendRecurringRandomMessage extends TimerTask {
     private Guild guild;
     private TextChannel outputChannel;
     private List<TextChannel> booneChannels;
-    private RandomQuoteSender randomQuoteSender;
+    private RandomQuoteShipper randomQuoteShipper;
 
-    public SendRecurringRandomMessage(Guild guild, TextChannel outputChannel, RandomQuoteSender randomQuoteSender) {
+    public SendRecurringRandomMessage(Guild guild, TextChannel outputChannel, RandomQuoteShipper randomQuoteShipper) {
         this.guild = guild;
         this.outputChannel = outputChannel;
         booneChannels = guild.getTextChannels();
-        this.randomQuoteSender = randomQuoteSender;
+        this.randomQuoteShipper = randomQuoteShipper;
     }
 
     @Override
     public void run() {
 
-        randomQuoteSender.setDbTableName("combinedtable" + guild.getName().replaceAll("\\s", ""));
+        String finalTableName = "combinedtable" + guild.getName().replaceAll("\\s", "");
 
-        String retrievedMessage = randomQuoteSender.getRandomQuote();
+        randomQuoteShipper.setDbTableName(finalTableName);
+
+        String retrievedMessage = randomQuoteShipper.getRandomQuote(randomQuoteShipper.getDbTableName());
 
         String outGoingMessage = retrievedMessage.length() < 2000 ? retrievedMessage : MESSAGE_TOO_LONG;
 

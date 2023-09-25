@@ -10,7 +10,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.bog.bot.Utils.Utils.removeHyphensFromTableName;
+import static org.bog.bot.Utils.Util.removeHyphensFromTableName;
 
 public class UnionTables {
     private final Logger logger;
