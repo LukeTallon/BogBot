@@ -67,19 +67,4 @@ public class BogBotEventListener extends ListenerAdapter {
             logger.error("An error occurred while processing a message:", e);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
