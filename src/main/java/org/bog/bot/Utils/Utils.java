@@ -8,9 +8,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -18,6 +15,10 @@ public class Utils {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+
+    private static final String TOKEN_PATH = "/token.yaml";
+    private static final String TIMER_PATH = "/timerConfig.yaml";
+    private static final String DB_CONFIG_PATH = "/dbConfig.yaml";
 
     //PostgreSQL seems to not like hyphens
     public static String removeHyphensFromTableName(String tableName) {
@@ -59,23 +60,26 @@ public class Utils {
     }
 
     public static String loadToken() throws IOException {
-        // Load the token.yaml file
-        Path tokenPath = Paths.get("src/main/resources/token.yaml");
-        try (InputStream inputStream = Files.newInputStream(tokenPath)) {
+        try (InputStream inputStream = Utils.class.getResourceAsStream(TOKEN_PATH)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + TOKEN_PATH);
+            }
+
             // Parse the YAML content
             Yaml yaml = new Yaml();
             Map<String, String> yamlData = yaml.load(inputStream);
 
             // Get the token from the YAML data
-
             return yamlData.get("token");
         }
     }
 
     public static long[] loadTimerConfig() throws IOException {
-        // Load the token.yaml file
-        Path tokenPath = Paths.get("src/main/resources/timerConfig.yaml");
-        try (InputStream inputStream = Files.newInputStream(tokenPath)) {
+        try (InputStream inputStream = Utils.class.getResourceAsStream(TIMER_PATH)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + TIMER_PATH);
+            }
+
             // Parse the YAML content
             Yaml yaml = new Yaml();
             Map<String, Object> yamlData = yaml.load(inputStream);
@@ -89,9 +93,11 @@ public class Utils {
     }
 
     public static String[] loadDBloginInfo() {
-        // Load the token.yaml file
-        Path dbConfigPath = Paths.get("src/main/resources/dbConfig.yaml");
-        try (InputStream inputStream = Files.newInputStream(dbConfigPath)) {
+        try (InputStream inputStream = Utils.class.getResourceAsStream(DB_CONFIG_PATH)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + DB_CONFIG_PATH);
+            }
+
             // Parse the YAML content
             Yaml yaml = new Yaml();
             Map<String, String> yamlData = yaml.load(inputStream);

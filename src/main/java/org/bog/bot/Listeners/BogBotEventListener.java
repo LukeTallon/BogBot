@@ -155,7 +155,7 @@ public class BogBotEventListener extends ListenerAdapter {
         return allPopulated.thenCompose(v -> {
             List<TextChannel> filteredTextChannels = guild.getTextChannels()
                     .stream()
-                    .filter(channel -> !channel.getName().equals(BOGBOT_CHANNEL_NAME) && !channel.getName().equals(FRIENDS_SPOILER_CHANNEL))                    .toList();
+                    .filter(channel -> !channel.getName().equals(BOGBOT_CHANNEL_NAME) && !channel.getName().equals(FRIENDS_SPOILER_CHANNEL)).toList();
 
             for (TextChannel textChannel : filteredTextChannels) {
                 randomQuoteSender.getDatabasePopulator().populateDB(textChannel);
