@@ -31,7 +31,9 @@ public class SendRecurringRandomMessage extends TimerTask {
     @Override
     public void run() {
 
-        randomQuoteShipper.setDbTableName("combinedtable" + guild.getName().replaceAll("\\s", ""));
+        String finalTableName = "combinedtable" + guild.getName().replaceAll("\\s", "");
+
+        randomQuoteShipper.setDbTableName(finalTableName);
 
         String retrievedMessage = randomQuoteShipper.getRandomQuote(randomQuoteShipper.getDbTableName());
 

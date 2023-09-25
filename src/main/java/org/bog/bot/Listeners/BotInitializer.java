@@ -30,9 +30,9 @@ public class BotInitializer {
 
     public void initializeBogBot(Guild guild, TextChannel outputChannel, String message) {
         if (message.equalsIgnoreCase("!setup")) {
-            CompletableFuture<Void> setupFuture = new MessageRetrievalStage(logger,databasePopulator).readMessagesInGuildAsync(guild, outputChannel, messageReader)
-                    .thenCompose(v -> CompletableFuture.runAsync(() -> outputChannel.sendMessage("Populating database...").queue()))
-                    .thenCompose(v -> new DatabasePopulationStage(logger,randomQuoteShipper,messageReader,databasePopulator).writeAllMessagesToDB(guild))
+            CompletableFuture<Void> setupFuture = new MessageRetrievalStage(logger,databasePopulator)
+                    .readMessagesInGuildAsync(guild, outputChannel, messageReader)
+                    .thenCompose(v -> new DatabasePopulationStage(logger,randomQuoteShipper,messageReader,databasePopulator,outputChannel).writeAllMessagesToDB(guild))
                     .thenCompose(v -> new BeginSendingMessageStage(logger, randomQuoteShipper).startSendingRecurringRandomMessageAsync(guild, outputChannel));
 
             setupFuture.exceptionally(e -> {

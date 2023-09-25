@@ -62,11 +62,9 @@ public class MessageReader {
             for (Message message : channel.getIterableHistory()) {
                 messageList.add(message);
                 if (messageList.size() % 1000 == 0) {
-                    logger.info("Messages size: {}", messageList.size());
+                    logger.info(channel + " has retrieved {} messages {}", messageList.size());
                 }
             }
-
-            logger.info("Messages size: {}", messageList.size());
             return messageList;
         }).exceptionally(e -> {
             logger.error("Error retrieving messages:", e);

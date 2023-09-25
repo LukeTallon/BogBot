@@ -32,11 +32,14 @@ public class BeginSendingMessageStage {
         try {
             timerValues = loadTimerConfig();
         } catch (IOException e) {
+            logger.error("Error loading timer config: ", e);
             throw new RuntimeException(e);
         }
 
-        long delay = timerValues[0];  // Delay before the first execution (in milliseconds)
-        long interval = timerValues[1];  // Interval between executions (every 30 sec for testing)
+        long delay = timerValues[0];  // Delay before the first execution
+        logger.info("Delay upon first starting (in ms): " + delay);
+        long interval = timerValues[1];  // Interval between executions
+        logger.info("Interval between messages (in ms): " + interval);
         timer.scheduleAtFixedRate(new SendRecurringRandomMessage(guild, outputChannel, randomQuoteShipper), delay, interval);
     }
 }

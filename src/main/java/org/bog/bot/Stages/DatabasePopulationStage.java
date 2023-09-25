@@ -21,18 +21,22 @@ public class DatabasePopulationStage {
     private RandomQuoteShipper randomQuoteShipper;
     private MessageReader messageReader;
     private DatabasePopulator databasePopulator;
+    private TextChannel outputChannel;
 
-    public DatabasePopulationStage(Logger logger, RandomQuoteShipper randomQuoteShipper, MessageReader messageReader, DatabasePopulator databasePopulator) {
+    public DatabasePopulationStage(Logger logger, RandomQuoteShipper randomQuoteShipper, MessageReader messageReader, DatabasePopulator databasePopulator, TextChannel outputChannel) {
         this.logger = logger;
         this.randomQuoteShipper = randomQuoteShipper;
         this.messageReader = messageReader;
         this.databasePopulator = databasePopulator;
+        this.outputChannel = outputChannel;
     }
 
     public CompletableFuture<Void> writeAllMessagesToDB(Guild guild) {
         CompletableFuture<Void> allPopulated = CompletableFuture.allOf(
                 messageReader.getPopulateFutures().toArray(new CompletableFuture[0])
         );
+
+        outputChannel.sendMessage("Populating database...").queue();
 
         return allPopulated.thenCompose(v -> {
             List<TextChannel> filteredTextChannels = guild.getTextChannels()

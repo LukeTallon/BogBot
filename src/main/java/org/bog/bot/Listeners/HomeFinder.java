@@ -10,13 +10,8 @@ import java.util.Optional;
 
 import static org.bog.bot.Utils.Util.BOGBOT_CHANNEL_NAME;
 
-//find the channels bogbot can stay in.
-
 public class HomeFinder {
-
-
-
-
+    //find the channels bogbot can stay in.
     public Map<String, TextChannel> bogBotsChannels(List<Guild> guilds) {
         Map<String, TextChannel> resultMap = new HashMap<>();
 

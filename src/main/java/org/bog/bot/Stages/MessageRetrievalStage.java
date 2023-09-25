@@ -4,7 +4,6 @@ import lombok.Data;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bog.bot.MessageRetrieval.MessageReader;
-import org.bog.bot.POJOs.MessageRetrievalOutput;
 import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
 
