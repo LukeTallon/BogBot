@@ -54,7 +54,7 @@ public class BogBotEventListener extends ListenerAdapter {
                     Map<String, TextChannel> bogBotsHomes = botshome.bogBotsChannels(guilds);
 
                     if (bogBotsHomes.containsKey(guildId)) {
-                        if (message.equalsIgnoreCase("!setup") || message.equalsIgnoreCase("!restart")) {
+                        if (message.equalsIgnoreCase("!setup") || message.equalsIgnoreCase("!restart") || message.equalsIgnoreCase("!rq")) {
                             TextChannel outputChannel = bogBotsHomes.get(guildId);
                             BotInitializer botInitializer = new BotInitializer(logger, randomQuoteShipper, messageReader,databasePopulator);
                             botInitializer.initializeBogBot(guild, outputChannel, message);
