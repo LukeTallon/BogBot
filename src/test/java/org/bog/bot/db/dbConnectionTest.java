@@ -4,18 +4,25 @@ package org.bog.bot.db;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mock;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
+
 public class dbConnectionTest {
 
-
-    final TableCreation tableCreation = new TableCreation("bogbot1");
+    @Mock
+    private Logger logger;
+    final TableCreation tableCreation = new TableCreation(logger, "bogbot1");
+    final TableDropper tableDropper = new TableDropper(logger, "bogbot1");
 
     @BeforeEach
     private void setUp() {
@@ -24,12 +31,16 @@ public class dbConnectionTest {
 
     @AfterEach
     private void afterScenario() {
-        tableCreation.TableDropper();
+        tableDropper.TableDropper();
     }
 
     //@Test
     public void testConnectDB() {
         try {
+            doNothing().when(logger).info(anyString());
+
+
+
             // Establish a database connection
             Connection connection = DatabaseConnection.connect();
 

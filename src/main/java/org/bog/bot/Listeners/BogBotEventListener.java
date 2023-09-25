@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.bog.bot.MessageDispatch.RandomQuoteSender;
+import org.bog.bot.MessageDispatch.RandomQuoteShipper;
 import org.bog.bot.MessageRetrieval.MessageReader;
 import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class BogBotEventListener extends ListenerAdapter {
     private static Logger logger;
     private final String MESSAGE_TOO_LONG = "A random message was selected... However, it was over 2,000 characters, and therefore too long to send it. :(";
     private TextChannel outputChannelField;
-    private RandomQuoteSender randomQuoteSender;
+    private RandomQuoteShipper randomQuoteShipper;
     private MessageReader messageReader;
     private DatabasePopulator databasePopulator;
     private JDA jda;
@@ -36,7 +36,7 @@ public class BogBotEventListener extends ListenerAdapter {
         this.guilds = guilds;
         this.logger = logger;
         this.databasePopulator = new DatabasePopulator(logger);
-        this.randomQuoteSender = new RandomQuoteSender(logger, databasePopulator);
+        this.randomQuoteShipper = new RandomQuoteShipper(logger);
         this.messageReader = new MessageReader(logger, databasePopulator);
     }
 
@@ -54,9 +54,11 @@ public class BogBotEventListener extends ListenerAdapter {
                     Map<String, TextChannel> bogBotsHomes = botshome.bogBotsChannels(guilds);
 
                     if (bogBotsHomes.containsKey(guildId)) {
-                        TextChannel outputChannel = bogBotsHomes.get(guildId);
-                        BotInitializer botInitializer = new BotInitializer(logger, randomQuoteSender, messageReader);
-                        botInitializer.initializeBogBot(guild, outputChannel, message);
+                        if (message.equalsIgnoreCase("!setup") || message.equalsIgnoreCase("!restart")) {
+                            TextChannel outputChannel = bogBotsHomes.get(guildId);
+                            BotInitializer botInitializer = new BotInitializer(logger, randomQuoteShipper, messageReader,databasePopulator);
+                            botInitializer.initializeBogBot(guild, outputChannel, message);
+                        }
                     }
                 }
 

@@ -3,7 +3,7 @@ package org.bog.bot.MessageRetrieval;
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.MessageDispatch.RandomQuoteSender;
+import org.bog.bot.MessageDispatch.RandomQuoteShipper;
 import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
 
@@ -19,7 +19,7 @@ public class MessageReader {
 
     private final Map<Long, List<Message>> channelMessageHistories = new ConcurrentHashMap<>();
     private final List<CompletableFuture<Void>> populateFutures = new ArrayList<>();
-    RandomQuoteSender randomQuoteSender;
+    RandomQuoteShipper randomQuoteShipper;
     DatabasePopulator databasePopulator;
     private Logger logger;
 

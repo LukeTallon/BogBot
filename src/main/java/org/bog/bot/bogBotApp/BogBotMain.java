@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.bog.bot.Listeners.BogBotEventListener;
-import org.bog.bot.Utils.Utils;
+import org.bog.bot.Utils.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class BogBotMain {
     }
 
     public void start() throws IOException, InterruptedException {
-        String token = Utils.loadToken(); // Example assumes Utils.loadToken handles exceptions gracefully and logs them
+        String token = Util.loadToken(); // Example assumes Util.loadToken handles exceptions gracefully and logs them
         if (token == null || token.isEmpty()) {
             logger.error("Bot token is missing or empty. Please check your configuration.");
             return;

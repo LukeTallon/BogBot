@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.bog.bot.Utils.Utils.discordQuoteBuilder;
-import static org.bog.bot.Utils.Utils.removeHyphensFromTableName;
+import static org.bog.bot.Utils.Util.discordQuoteBuilder;
+import static org.bog.bot.Utils.Util.removeHyphensFromTableName;
 
 @Data
 public class DatabasePopulator {
@@ -42,7 +42,7 @@ public class DatabasePopulator {
 
         if (!tableExists(dbTableName)) {
             logger.info("creating {} table.", dbTableName);
-            TableCreation tableCreation = new TableCreation(dbTableName);
+            TableCreation tableCreation = new TableCreation(logger, dbTableName);
             tableCreation.TableCreator();
             for (Message message : AllMessagesInChannel) {
                 DiscordQuote discordQuote = discordQuoteBuilder(message);
@@ -52,32 +52,6 @@ public class DatabasePopulator {
         } else {
             logger.info("database name already exists so I'll come back to this scenario.");
         }
-    }
-
-    public DiscordQuote getRandomMessageFromDB(String dbTableName) {
-        String selectQuery = "SELECT id, contentraw, author, dateofmessage, image, jumpurl FROM " + dbTableName + " ORDER BY random() LIMIT 1";
-        DiscordQuote discordQuote = null;
-
-        try (Connection connection = DatabaseConnection.connect();
-             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            if (resultSet.next()) {
-                discordQuote = DiscordQuote.builder()
-                        .id(resultSet.getString("id"))
-                        .contentRaw(resultSet.getString("contentraw"))
-                        .author(resultSet.getString("author"))
-                        .dateOfMessage(resultSet.getString("dateofmessage"))
-                        .conditionalImage(resultSet.getString("image"))
-                        .jumpUrl(resultSet.getString("jumpurl"))
-                        .build();
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return discordQuote;
     }
 
     public void insertMessage(DiscordQuote discordQuote, String dbTableName) {
@@ -123,5 +97,4 @@ public class DatabasePopulator {
             return false;
         }
     }
-
 }

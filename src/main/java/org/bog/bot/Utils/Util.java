@@ -11,11 +11,13 @@ import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-public class Utils {
+public class Util {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
 
-    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+    private static final Logger logger = LoggerFactory.getLogger(Util.class);
 
+    public static final String BOGBOT_CHANNEL_NAME = "bogbot";
+    public static final String FRIENDS_SPOILER_CHANNEL = "spoilertalk";
     private static final String TOKEN_PATH = "/token.yaml";
     private static final String TIMER_PATH = "/timerConfig.yaml";
     private static final String DB_CONFIG_PATH = "/dbConfig.yaml";
@@ -55,7 +57,7 @@ public class Utils {
     }
 
     public static String loadToken() throws IOException {
-        try (InputStream inputStream = Utils.class.getResourceAsStream(TOKEN_PATH)) {
+        try (InputStream inputStream = Util.class.getResourceAsStream(TOKEN_PATH)) {
             if (inputStream == null) {
                 throw new IOException("Resource not found: " + TOKEN_PATH);
             }
@@ -73,7 +75,7 @@ public class Utils {
     }
 
     public static long[] loadTimerConfig() throws IOException {
-        try (InputStream inputStream = Utils.class.getResourceAsStream(TIMER_PATH)) {
+        try (InputStream inputStream = Util.class.getResourceAsStream(TIMER_PATH)) {
             if (inputStream == null) {
                 throw new IOException("Resource not found: " + TIMER_PATH);
             }
@@ -94,7 +96,7 @@ public class Utils {
     }
 
     public static String[] loadDBloginInfo() {
-        try (InputStream inputStream = Utils.class.getResourceAsStream(DB_CONFIG_PATH)) {
+        try (InputStream inputStream = Util.class.getResourceAsStream(DB_CONFIG_PATH)) {
             if (inputStream == null) {
                 throw new IOException("Resource not found: " + DB_CONFIG_PATH);
             }

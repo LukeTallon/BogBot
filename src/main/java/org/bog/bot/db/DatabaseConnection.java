@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static org.bog.bot.Utils.Utils.loadDBloginInfo;
+import static org.bog.bot.Utils.Util.loadDBloginInfo;
 
 public class DatabaseConnection {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConnection.class);
