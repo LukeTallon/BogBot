@@ -1,4 +1,4 @@
-package org.bog.bot.Listeners;
+package org.bog.bot.listeners;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -7,8 +7,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.bog.bot.MessageDispatch.RandomQuoteShipper;
-import org.bog.bot.MessageRetrieval.MessageReader;
+import org.bog.bot.messageDispatch.RandomQuoteShipper;
+import org.bog.bot.messageRetrieval.MessageReader;
+import org.bog.bot.botManager.BotInitializer;
+import org.bog.bot.botManager.HomeFinder;
 import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
 
@@ -34,7 +36,7 @@ public class BogBotEventListener extends ListenerAdapter {
     public BogBotEventListener(Logger logger, JDA jda, List<Guild> guilds) {
         this.jda = jda;
         this.guilds = guilds;
-        this.logger = logger;
+        BogBotEventListener.logger = logger;
         this.databasePopulator = new DatabasePopulator(logger);
         this.randomQuoteShipper = new RandomQuoteShipper(logger);
         this.messageReader = new MessageReader(logger, databasePopulator);

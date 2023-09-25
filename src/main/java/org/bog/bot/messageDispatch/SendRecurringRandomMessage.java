@@ -1,4 +1,4 @@
-package org.bog.bot.MessageDispatch;
+package org.bog.bot.messageDispatch;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

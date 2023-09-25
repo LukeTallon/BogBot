@@ -1,9 +1,9 @@
-package org.bog.bot.Stages;
+package org.bog.bot.stages;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.MessageDispatch.RandomQuoteShipper;
-import org.bog.bot.MessageRetrieval.MessageReader;
+import org.bog.bot.messageDispatch.RandomQuoteShipper;
+import org.bog.bot.messageRetrieval.MessageReader;
 import org.bog.bot.db.DatabasePopulator;
 import org.bog.bot.db.UnionTables;
 import org.slf4j.Logger;
@@ -17,11 +17,11 @@ import static org.bog.bot.Utils.Util.FRIENDS_SPOILER_CHANNEL;
 
 public class DatabasePopulationStage {
 
-    private Logger logger;
-    private RandomQuoteShipper randomQuoteShipper;
-    private MessageReader messageReader;
-    private DatabasePopulator databasePopulator;
-    private TextChannel outputChannel;
+    private final Logger logger;
+    private final RandomQuoteShipper randomQuoteShipper;
+    private final MessageReader messageReader;
+    private final DatabasePopulator databasePopulator;
+    private final TextChannel outputChannel;
 
     public DatabasePopulationStage(Logger logger, RandomQuoteShipper randomQuoteShipper, MessageReader messageReader, DatabasePopulator databasePopulator, TextChannel outputChannel) {
         this.logger = logger;

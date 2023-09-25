@@ -1,9 +1,9 @@
-package org.bog.bot.Stages;
+package org.bog.bot.stages;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.MessageDispatch.RandomQuoteShipper;
-import org.bog.bot.MessageDispatch.SendRecurringRandomMessage;
+import org.bog.bot.messageDispatch.RandomQuoteShipper;
+import org.bog.bot.messageDispatch.SendRecurringRandomMessage;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -13,8 +13,8 @@ import java.util.concurrent.CompletableFuture;
 import static org.bog.bot.Utils.Util.loadTimerConfig;
 
 public class BeginSendingMessageStage {
-    private Logger logger;
-    private RandomQuoteShipper randomQuoteShipper;
+    private final Logger logger;
+    private final RandomQuoteShipper randomQuoteShipper;
 
     public BeginSendingMessageStage(Logger logger, RandomQuoteShipper randomQuoteShipper) {
         this.logger = logger;

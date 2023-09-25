@@ -1,9 +1,9 @@
-package org.bog.bot.MessageRetrieval;
+package org.bog.bot.messageRetrieval;
 
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.MessageDispatch.RandomQuoteShipper;
+import org.bog.bot.messageDispatch.RandomQuoteShipper;
 import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
 

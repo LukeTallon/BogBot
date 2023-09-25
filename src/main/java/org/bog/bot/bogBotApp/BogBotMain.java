@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import org.bog.bot.Listeners.BogBotEventListener;
+import org.bog.bot.listeners.BogBotEventListener;
 import org.bog.bot.Utils.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,13 +1,13 @@
-package org.bog.bot.Listeners;
+package org.bog.bot.botManager;
 
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.MessageDispatch.RandomQuoteShipper;
-import org.bog.bot.MessageRetrieval.MessageReader;
-import org.bog.bot.Stages.BeginSendingMessageStage;
-import org.bog.bot.Stages.DatabasePopulationStage;
-import org.bog.bot.Stages.MessageRetrievalStage;
+import org.bog.bot.messageDispatch.RandomQuoteShipper;
+import org.bog.bot.messageRetrieval.MessageReader;
+import org.bog.bot.stages.BeginSendingMessageStage;
+import org.bog.bot.stages.DatabasePopulationStage;
+import org.bog.bot.stages.MessageRetrievalStage;
 import org.bog.bot.db.DatabasePopulator;
 import org.slf4j.Logger;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +21,7 @@ public class BotInitializer {
     private DatabasePopulator databasePopulator;
 
         public BotInitializer(Logger logger, RandomQuoteShipper randomQuoteShipper, MessageReader messageReader, DatabasePopulator databasePopulator) {
-        this.logger = logger;
+        BotInitializer.logger = logger;
         this.randomQuoteShipper = randomQuoteShipper;
         this.messageReader = messageReader;
         this.databasePopulator = databasePopulator;

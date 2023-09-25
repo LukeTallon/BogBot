@@ -1,4 +1,4 @@
-package org.bog.bot.Listeners;
+package org.bog.bot.botManager;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
