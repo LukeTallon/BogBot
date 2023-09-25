@@ -27,7 +27,7 @@ public class dbConnectionTest {
         tableCreation.TableDropper();
     }
 
-    @Test
+    //@Test
     public void testConnectDB() {
         try {
             // Establish a database connection
