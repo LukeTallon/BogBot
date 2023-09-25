@@ -41,10 +41,10 @@ public class BogBotEventListener extends ListenerAdapter {
     private JDA jda;
     private List<Guild> guilds;
 
-    public BogBotEventListener(JDA jda, List<Guild> guilds) {
+    public BogBotEventListener(Logger logger, JDA jda, List<Guild> guilds) {
         this.jda = jda;
         this.guilds = guilds;
-        logger = LoggerFactory.getLogger(BogBotEventListener.class);
+        this.logger = logger;
         this.databasePopulator = new DatabasePopulator(logger);
         this.randomQuoteSender = new RandomQuoteSender(logger, databasePopulator);
         this.messageReader = new MessageReader(logger, databasePopulator);

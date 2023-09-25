@@ -33,20 +33,15 @@ public class Utils {
 
     public static DiscordQuote discordQuoteBuilder(Message message) {
         // Initialize a string to store image URLs
-        String imageUrls = null;
+        StringBuilder imageUrls = new StringBuilder();
 
         // Loop through the attachments to find image URLs
-        for (Message.Attachment attachment : message.getAttachments()) {
-            if (attachment.isImage()) {
-                // If it's the first image URL, initialize the string
-                if (imageUrls == null) {
-                    imageUrls = attachment.getUrl() + " \n";
-                } else {
-                    // If it's not the first, append it with a space and newline
-                    imageUrls += attachment.getUrl() + " \n";
-                }
-            }
-        }
+        message.getAttachments().stream()
+                .filter(Message.Attachment::isImage)
+                .forEach(attachment -> imageUrls.append(attachment.getUrl()).append(" \n"));
+
+        String allImageUrls = imageUrls.toString();
+
 
         // Build and return the DiscordQuote object
         return DiscordQuote.builder()
@@ -54,7 +49,7 @@ public class Utils {
                 .contentRaw(message.getContentRaw())
                 .author(message.getAuthor().getEffectiveName())
                 .dateOfMessage(formatter.format(message.getTimeCreated()))
-                .conditionalImage(imageUrls)
+                .conditionalImage(allImageUrls)
                 .jumpUrl(message.getJumpUrl())
                 .build();
     }
@@ -71,6 +66,9 @@ public class Utils {
 
             // Get the token from the YAML data
             return yamlData.get("token");
+        } catch (IOException e) {
+            logger.error("Error in loadToken", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -89,6 +87,9 @@ public class Utils {
             long delay = ((Number) yamlData.get("delay")).longValue() * 1000L;
 
             return new long[]{delay, interval};
+        } catch (IOException e) {
+            logger.error("Error in loadTimerConfig", e);
+            throw new RuntimeException(e);
         }
     }
 
