@@ -6,7 +6,7 @@
 
     <groupId>org.bog.bot</groupId>
     <artifactId>bogBot</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.4.1-SNAPSHOT</version>
 
     <name>bogBot</name>
     <!-- FIXME change it to the project's website -->
@@ -40,6 +40,10 @@
             <name>m2-dv8tion</name>
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -53,14 +57,14 @@
             <version>42.6.0</version> <!-- Replace with the desired version -->
         </dependency>
         <dependency>
-            <groupId>com.sedmelluq</groupId>
-            <artifactId>lavaplayer</artifactId>
-            <version>1.3.77</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.cloud.sql</groupId>
             <artifactId>postgres-socket-factory</artifactId>
             <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.arbjerg</groupId>
+            <artifactId>lavaplayer</artifactId>
+            <version>2.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

@@ -1,15 +1,12 @@
 package org.bog.bot.bogBotApp;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import org.bog.bot.listeners.BogBotEventListener;
 import org.bog.bot.Utils.Util;
-import org.bog.bot.listeners.MusiquePlayer;
-import org.bog.bot.listeners.TrackScheduler;
+import org.bog.bot.listeners.RandomQuoteListener;
+import org.bog.bot.listeners.YTMusicListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,14 +41,8 @@ public class BogBotMain {
 
         List<Guild> guilds = jda.awaitReady().getGuilds();
 
-        jda.addEventListener(new BogBotEventListener(logger, jda, guilds));
+        jda.addEventListener(new RandomQuoteListener(logger, jda, guilds));
 
-        DefaultAudioPlayerManager playerManager = new DefaultAudioPlayerManager();
-
-        AudioPlayer player = playerManager.createPlayer();
-
-        jda.addEventListener(new MusiquePlayer(playerManager, player, logger, new TrackScheduler(player)));
-
-
+        jda.addEventListener(new YTMusicListener(logger));
     }
 }

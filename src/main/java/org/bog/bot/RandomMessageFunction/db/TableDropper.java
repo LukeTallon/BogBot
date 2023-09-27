@@ -8,7 +8,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
 import static org.bog.bot.Utils.Util.loadDBloginInfo;
 
 @Data

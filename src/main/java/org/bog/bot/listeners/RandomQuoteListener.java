@@ -7,11 +7,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.bog.bot.RandomMessageFunction.messageDispatch.RandomQuoteShipper;
-import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageReader;
 import org.bog.bot.RandomMessageFunction.botManager.BotInitializer;
 import org.bog.bot.RandomMessageFunction.botManager.HomeFinder;
 import org.bog.bot.RandomMessageFunction.db.DatabasePopulator;
+import org.bog.bot.RandomMessageFunction.messageDispatch.RandomQuoteShipper;
+import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageReader;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class BogBotEventListener extends ListenerAdapter {
+public class RandomQuoteListener extends ListenerAdapter {
 
 
     public static final String SETUP_COMMAND = "!setup";
@@ -33,10 +33,10 @@ public class BogBotEventListener extends ListenerAdapter {
     private List<Guild> guilds;
     private HomeFinder botshome = new HomeFinder();
 
-    public BogBotEventListener(Logger logger, JDA jda, List<Guild> guilds) {
+    public RandomQuoteListener(Logger logger, JDA jda, List<Guild> guilds) {
         this.jda = jda;
         this.guilds = guilds;
-        BogBotEventListener.logger = logger;
+        RandomQuoteListener.logger = logger;
         this.databasePopulator = new DatabasePopulator(logger);
         this.randomQuoteShipper = new RandomQuoteShipper(logger);
         this.messageReader = new MessageReader(logger, databasePopulator);

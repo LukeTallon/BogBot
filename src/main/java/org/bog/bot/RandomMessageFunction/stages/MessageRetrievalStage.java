@@ -3,13 +3,12 @@ package org.bog.bot.RandomMessageFunction.stages;
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageReader;
 import org.bog.bot.RandomMessageFunction.db.DatabasePopulator;
+import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageReader;
 import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
 
 import static org.bog.bot.Utils.Util.BOGBOT_CHANNEL_NAME;
 import static org.bog.bot.Utils.Util.FRIENDS_SPOILER_CHANNEL;

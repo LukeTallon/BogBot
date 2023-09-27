@@ -2,10 +2,10 @@ package org.bog.bot.RandomMessageFunction.stages;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.RandomMessageFunction.messageDispatch.RandomQuoteShipper;
-import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageReader;
 import org.bog.bot.RandomMessageFunction.db.DatabasePopulator;
 import org.bog.bot.RandomMessageFunction.db.UnionTables;
+import org.bog.bot.RandomMessageFunction.messageDispatch.RandomQuoteShipper;
+import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageReader;
 import org.slf4j.Logger;
 
 import java.util.List;
