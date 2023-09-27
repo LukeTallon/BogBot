@@ -36,7 +36,7 @@ public class DatabasePopulationStage {
                 messageReader.getPopulateFutures().toArray(new CompletableFuture[0])
         );
 
-        outputChannel.sendMessage("Populating database...").queue();
+        logger.info("Populating database...");
 
         return allPopulated.thenCompose(v -> {
             List<TextChannel> filteredTextChannels = guild.getTextChannels()

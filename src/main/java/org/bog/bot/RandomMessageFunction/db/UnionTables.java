@@ -118,7 +118,7 @@ public class UnionTables {
                 throw new RuntimeException(e);
             }
         }
-        outputChannel.sendMessage("Database populated and ready!").queue();
+        //outputChannel.sendMessage("Database populated and ready!").queue();
     }
 
 }

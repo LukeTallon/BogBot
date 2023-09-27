@@ -30,14 +30,15 @@ public class MessageReader {
 
     public void populateMessages(TextChannel channel, TextChannel outputChannel) {
         if (!channelMessageHistories.containsKey(channel.getIdLong())) {
-            Message botLoadingResponse = outputChannel.sendMessage("Loading messages from " + channel.getName() + ", please wait...").complete();
+            //Message botLoadingResponse = outputChannel.sendMessage("Loading messages from " + channel.getName() + ", please wait...").complete();
+            logger.info("Loading messages from {}, please wait...", channel.getName());
             CompletableFuture<List<Message>> allMessages = retrieveAllMessages(channel);
 
             // Here we are capturing the CompletableFuture returned by the thenAcceptAsync method.
             CompletableFuture<Void> populateFuture = allMessages.thenAcceptAsync(messages -> {
                 channelMessageHistories.put(channel.getIdLong(), new ArrayList<>(messages));
                 logger.info("finale final size: {}", totalMessageCount(channel));
-                botLoadingResponse.editMessage(totalMessageCount(channel) + " messages retrieved from " + channel.getName()).queue();
+                //botLoadingResponse.editMessage(totalMessageCount(channel) + " messages retrieved from " + channel.getName()).queue();
             });
 
             // We add the CompletableFuture to the populateFutures list in a thread-safe manner
