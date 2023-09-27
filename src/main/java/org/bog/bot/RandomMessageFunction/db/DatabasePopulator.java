@@ -1,4 +1,4 @@
-package org.bog.bot.db;
+package org.bog.bot.RandomMessageFunction.db;
 
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Message;

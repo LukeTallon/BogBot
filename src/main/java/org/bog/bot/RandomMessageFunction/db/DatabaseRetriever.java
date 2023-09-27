@@ -1,4 +1,4 @@
-package org.bog.bot.db;
+package org.bog.bot.RandomMessageFunction.db;
 
 import org.bog.bot.POJOs.DiscordQuote;
 import org.slf4j.Logger;

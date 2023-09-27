@@ -1,10 +1,10 @@
-package org.bog.bot.stages;
+package org.bog.bot.RandomMessageFunction.stages;
 
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.messageRetrieval.MessageReader;
-import org.bog.bot.db.DatabasePopulator;
+import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageReader;
+import org.bog.bot.RandomMessageFunction.db.DatabasePopulator;
 import org.slf4j.Logger;
 
 import java.util.List;

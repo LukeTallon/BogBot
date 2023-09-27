@@ -1,14 +1,14 @@
-package org.bog.bot.botManager;
+package org.bog.bot.RandomMessageFunction.botManager;
 
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.messageDispatch.RandomQuoteShipper;
-import org.bog.bot.messageRetrieval.MessageReader;
-import org.bog.bot.stages.BeginSendingMessageStage;
-import org.bog.bot.stages.DatabasePopulationStage;
-import org.bog.bot.stages.MessageRetrievalStage;
-import org.bog.bot.db.DatabasePopulator;
+import org.bog.bot.RandomMessageFunction.messageDispatch.RandomQuoteShipper;
+import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageReader;
+import org.bog.bot.RandomMessageFunction.stages.BeginSendingMessageStage;
+import org.bog.bot.RandomMessageFunction.stages.DatabasePopulationStage;
+import org.bog.bot.RandomMessageFunction.stages.MessageRetrievalStage;
+import org.bog.bot.RandomMessageFunction.db.DatabasePopulator;
 import org.slf4j.Logger;
 import java.util.concurrent.CompletableFuture;
 

@@ -7,11 +7,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.bog.bot.messageDispatch.RandomQuoteShipper;
-import org.bog.bot.messageRetrieval.MessageReader;
-import org.bog.bot.botManager.BotInitializer;
-import org.bog.bot.botManager.HomeFinder;
-import org.bog.bot.db.DatabasePopulator;
+import org.bog.bot.RandomMessageFunction.messageDispatch.RandomQuoteShipper;
+import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageReader;
+import org.bog.bot.RandomMessageFunction.botManager.BotInitializer;
+import org.bog.bot.RandomMessageFunction.botManager.HomeFinder;
+import org.bog.bot.RandomMessageFunction.db.DatabasePopulator;
 import org.slf4j.Logger;
 
 import java.util.List;

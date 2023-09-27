@@ -1,9 +1,9 @@
-package org.bog.bot.messageDispatch;
+package org.bog.bot.RandomMessageFunction.messageDispatch;
 
 import lombok.Data;
-import org.bog.bot.messageRetrieval.MessageFormatter;
+import org.bog.bot.RandomMessageFunction.messageRetrieval.MessageFormatter;
 import org.bog.bot.POJOs.DiscordQuote;
-import org.bog.bot.db.DatabaseRetriever;
+import org.bog.bot.RandomMessageFunction.db.DatabaseRetriever;
 import org.slf4j.Logger;
 
 @Data

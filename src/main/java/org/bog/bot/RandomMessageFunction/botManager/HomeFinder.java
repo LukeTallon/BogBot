@@ -1,4 +1,4 @@
-package org.bog.bot.botManager;
+package org.bog.bot.RandomMessageFunction.botManager;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;

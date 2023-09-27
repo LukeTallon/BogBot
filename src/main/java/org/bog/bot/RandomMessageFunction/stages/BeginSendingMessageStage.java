@@ -1,9 +1,9 @@
-package org.bog.bot.stages;
+package org.bog.bot.RandomMessageFunction.stages;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bog.bot.messageDispatch.RandomQuoteShipper;
-import org.bog.bot.messageDispatch.SendRecurringRandomMessage;
+import org.bog.bot.RandomMessageFunction.messageDispatch.RandomQuoteShipper;
+import org.bog.bot.RandomMessageFunction.messageDispatch.SendRecurringRandomMessage;
 import org.slf4j.Logger;
 
 import java.io.IOException;

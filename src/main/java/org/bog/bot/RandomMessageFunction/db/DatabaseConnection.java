@@ -1,4 +1,4 @@
-package org.bog.bot.db;
+package org.bog.bot.RandomMessageFunction.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package org.bog.bot.messageRetrieval;
+package org.bog.bot.RandomMessageFunction.messageRetrieval;
 
 import org.bog.bot.POJOs.DiscordQuote;
 

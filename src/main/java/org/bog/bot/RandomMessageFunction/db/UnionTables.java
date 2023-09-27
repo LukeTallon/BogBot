@@ -1,4 +1,4 @@
-package org.bog.bot.db;
+package org.bog.bot.RandomMessageFunction.db;
 
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;

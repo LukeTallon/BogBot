@@ -1,9 +1,11 @@
 package org.bog.bot.db;
 
 
+import org.bog.bot.RandomMessageFunction.db.DatabaseConnection;
+import org.bog.bot.RandomMessageFunction.db.TableCreation;
+import org.bog.bot.RandomMessageFunction.db.TableDropper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 
@@ -14,7 +16,6 @@ import java.sql.SQLException;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 
 public class dbConnectionTest {
