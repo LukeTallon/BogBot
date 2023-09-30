@@ -38,6 +38,11 @@ public class YTMusicListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (!event.getMessage().getContentRaw().startsWith("!")) {
+            logger.info("Received a message that did not start with '!': ");
+            return;
+        }
+
         String messageContent = event.getMessage().getContentRaw();
         logger.info("Received a message: " + messageContent);
 

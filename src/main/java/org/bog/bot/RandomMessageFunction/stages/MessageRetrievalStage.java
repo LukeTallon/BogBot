@@ -36,7 +36,7 @@ public class MessageRetrievalStage {
 
         for (TextChannel textChannel : filteredTextChannels) {
             logger.info("Reading messages from channel: {}", textChannel.getName());
-            messageReader.populateMessages(textChannel, outputChannel);
+            messageReader.populateMessages(textChannel);
         }
     }
 }

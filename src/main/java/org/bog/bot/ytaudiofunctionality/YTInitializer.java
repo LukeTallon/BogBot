@@ -100,8 +100,8 @@ public class YTInitializer {
             // The member is in a voice channel in this guild
             audioManager.openAudioConnection(member.getVoiceState().getChannel());
         } else {
-            // Handle the case where the user is not in a voice channel
-            // You might want to send a message to the text channel informing the user that they need to be in a voice channel
+            logger.info("User used a command to summon the Audio bot but was not in a voice channel.");
+            sendMessage(guild, "User must be in a voice channel for this command to work.");
         }
     }
 

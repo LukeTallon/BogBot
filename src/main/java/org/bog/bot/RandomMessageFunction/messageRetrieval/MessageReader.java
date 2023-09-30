@@ -28,7 +28,7 @@ public class MessageReader {
         this.databasePopulator = databasePopulator;
     }
 
-    public void populateMessages(TextChannel channel, TextChannel outputChannel) {
+    public void populateMessages(TextChannel channel) {
         if (!channelMessageHistories.containsKey(channel.getIdLong())) {
             //Message botLoadingResponse = outputChannel.sendMessage("Loading messages from " + channel.getName() + ", please wait...").complete();
             logger.info("Loading messages from {}, please wait...", channel.getName());
